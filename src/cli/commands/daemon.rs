@@ -3,7 +3,7 @@ use crate::cli::daemon as daemon_utils;
 use crate::cli::errors::{CliError, CliResult};
 use crate::cli::output;
 use crate::db::operations::initialize_database;
-use crate::logic::sync::{create_swarm, P2PConfig};
+use crate::logic::sync::{P2PConfig, create_swarm};
 use crate::logic::sync_manager::SyncManager;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -25,15 +25,13 @@ pub async fn start(
     }
 
     // Check if user is configured
-    let user_config = config
-        .user
-        .as_ref()
-        .ok_or_else(|| CliError::ConfigError("User not configured. Run 'nexus-cli init' first.".to_string()))?;
+    let user_config = config.user.as_ref().ok_or_else(|| {
+        CliError::ConfigError("User not configured. Run 'nexus-cli init' first.".to_string())
+    })?;
 
-    let device_config = config
-        .device
-        .as_ref()
-        .ok_or_else(|| CliError::ConfigError("Device not configured. Run 'nexus-cli init' first.".to_string()))?;
+    let device_config = config.device.as_ref().ok_or_else(|| {
+        CliError::ConfigError("Device not configured. Run 'nexus-cli init' first.".to_string())
+    })?;
 
     if daemon {
         output::step("Starting daemon in background mode");
@@ -48,7 +46,8 @@ pub async fn start(
         #[cfg(not(unix))]
         {
             return Err(CliError::DaemonError(
-                "Daemon mode is only supported on Unix-like systems. Run in foreground mode.".to_string(),
+                "Daemon mode is only supported on Unix-like systems. Run in foreground mode."
+                    .to_string(),
             ));
         }
     } else {
@@ -88,8 +87,7 @@ async fn run_sync_loop(port: u16, config: &Config) -> CliResult<()> {
 
     // Initialize database connection
     let db_path = config.db_path();
-    let conn = initialize_database(&db_path)
-        .map_err(|e| CliError::DatabaseError(e.to_string()))?;
+    let conn = initialize_database(&db_path).map_err(|e| CliError::DatabaseError(e.to_string()))?;
     let conn = Arc::new(Mutex::new(conn));
 
     // Generate keypair for P2P
@@ -121,7 +119,10 @@ async fn run_sync_loop(port: u16, config: &Config) -> CliResult<()> {
     // Connect to bootstrap nodes and relay servers
     if !config.network.bootstrap_nodes.is_empty() || !config.network.relay_servers.is_empty() {
         sync_manager
-            .connect_to_network(&config.network.bootstrap_nodes, &config.network.relay_servers)
+            .connect_to_network(
+                &config.network.bootstrap_nodes,
+                &config.network.relay_servers,
+            )
             .map_err(|e| CliError::SyncError(format!("Failed to connect to network: {}", e)))?;
     }
 
@@ -235,7 +236,10 @@ fn print_status(json: bool, config: &Config, pid_file: &std::path::Path) -> CliR
                 ("PID", &pid_text),
                 ("Uptime", &uptime_text),
                 ("Database", &config.db_path()),
-                ("Sync Enabled", if config.sync.enabled { "Yes" } else { "No" }),
+                (
+                    "Sync Enabled",
+                    if config.sync.enabled { "Yes" } else { "No" },
+                ),
             ],
         );
     }

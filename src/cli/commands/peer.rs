@@ -5,11 +5,9 @@ use crate::db::operations::{get_all_peers, initialize_database};
 
 pub async fn list(json: bool, config: &Config) -> CliResult<()> {
     let db_path = config.db_path();
-    let conn = initialize_database(&db_path)
-        .map_err(|e| CliError::DatabaseError(e.to_string()))?;
+    let conn = initialize_database(&db_path).map_err(|e| CliError::DatabaseError(e.to_string()))?;
 
-    let peers = get_all_peers(&conn)
-        .map_err(|e| CliError::DatabaseError(e.to_string()))?;
+    let peers = get_all_peers(&conn).map_err(|e| CliError::DatabaseError(e.to_string()))?;
 
     if json {
         let peers_json: Vec<_> = peers
@@ -38,7 +36,12 @@ pub async fn list(json: bool, config: &Config) -> CliResult<()> {
                 prettytable::Cell::new(&peer.peer_id.to_string()),
                 prettytable::Cell::new(&peer.device_id.to_string()),
                 prettytable::Cell::new(peer.last_known_ip.as_deref().unwrap_or("N/A")),
-                prettytable::Cell::new(&peer.last_sync_time.map(|t| t.to_string()).unwrap_or_else(|| "Never".to_string())),
+                prettytable::Cell::new(
+                    &peer
+                        .last_sync_time
+                        .map(|t| t.to_string())
+                        .unwrap_or_else(|| "Never".to_string()),
+                ),
             ]));
         }
 
@@ -69,8 +72,7 @@ pub async fn remove(peer_id: &str, config: &Config) -> CliResult<()> {
 
 pub async fn info(peer_id: &str, json: bool, config: &Config) -> CliResult<()> {
     let db_path = config.db_path();
-    let conn = initialize_database(&db_path)
-        .map_err(|e| CliError::DatabaseError(e.to_string()))?;
+    let conn = initialize_database(&db_path).map_err(|e| CliError::DatabaseError(e.to_string()))?;
 
     let peer_uuid = uuid::Uuid::parse_str(peer_id)
         .map_err(|_| CliError::ValidationError("Invalid peer ID".to_string()))?;
@@ -93,8 +95,17 @@ pub async fn info(peer_id: &str, json: bool, config: &Config) -> CliResult<()> {
                 ("Peer ID", &peer.peer_id.to_string()),
                 ("User ID", &peer.user_id.to_string()),
                 ("Device ID", &peer.device_id.to_string()),
-                ("Last Known IP", peer.last_known_ip.as_deref().unwrap_or("N/A")),
-                ("Last Sync", &peer.last_sync_time.map(|t| t.to_string()).unwrap_or_else(|| "Never".to_string())),
+                (
+                    "Last Known IP",
+                    peer.last_known_ip.as_deref().unwrap_or("N/A"),
+                ),
+                (
+                    "Last Sync",
+                    &peer
+                        .last_sync_time
+                        .map(|t| t.to_string())
+                        .unwrap_or_else(|| "Never".to_string()),
+                ),
             ],
         );
     }

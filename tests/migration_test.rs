@@ -6,10 +6,10 @@
 //! - Schema correctness
 //! - Data preservation across migrations
 
+use cfost::db::migrations::{apply_migrations, get_current_version, get_migration_history};
+use cfost::db::operations::{create_user, get_user};
+use cfost::models::User;
 use chrono::Utc;
-use nexus_core::db::migrations::{apply_migrations, get_current_version, get_migration_history};
-use nexus_core::db::operations::{create_user, get_user};
-use nexus_core::models::User;
 use rusqlite::Connection;
 use uuid::Uuid;
 
@@ -98,10 +98,7 @@ fn test_migration_history_tracking() {
     let history = get_migration_history(&conn).unwrap();
 
     // Verify history entries exist
-    assert!(
-        !history.is_empty(),
-        "Migration history should not be empty"
-    );
+    assert!(!history.is_empty(), "Migration history should not be empty");
 
     // Verify first migration
     let (version, _timestamp, description) = &history[0];
@@ -124,9 +121,7 @@ fn test_schema_version_table_structure() {
     apply_migrations(&conn).unwrap();
 
     // Query the table structure
-    let mut stmt = conn
-        .prepare("PRAGMA table_info(schema_version)")
-        .unwrap();
+    let mut stmt = conn.prepare("PRAGMA table_info(schema_version)").unwrap();
 
     let columns: Vec<String> = stmt
         .query_map([], |row| row.get(1))
@@ -184,8 +179,8 @@ fn test_all_required_core_tables_exist() {
     apply_migrations(&conn).unwrap();
 
     let required_tables = vec![
-        "users",           // User authentication
-        "devices",         // Device management
+        "users",          // User authentication
+        "devices",        // Device management
         "oplog",          // CRDT operation log
         "peers",          // P2P peer tracking
         "schema_version", // Migration tracking

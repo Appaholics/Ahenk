@@ -168,24 +168,34 @@ impl Config {
         match parts[0] {
             "database" => match parts[1] {
                 "path" => self.database.path = value.to_string(),
-                "auto_migrate" => self.database.auto_migrate = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid boolean value".to_string())
-                })?,
+                "auto_migrate" => {
+                    self.database.auto_migrate = value.parse().map_err(|_| {
+                        CliError::ValidationError("Invalid boolean value".to_string())
+                    })?
+                }
                 _ => return Err(CliError::NotFound(format!("Unknown key: {}", key))),
             },
             "sync" => match parts[1] {
-                "enabled" => self.sync.enabled = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid boolean value".to_string())
-                })?,
-                "auto_start" => self.sync.auto_start = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid boolean value".to_string())
-                })?,
-                "enable_mdns" => self.sync.enable_mdns = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid boolean value".to_string())
-                })?,
-                "enable_relay" => self.sync.enable_relay = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid boolean value".to_string())
-                })?,
+                "enabled" => {
+                    self.sync.enabled = value.parse().map_err(|_| {
+                        CliError::ValidationError("Invalid boolean value".to_string())
+                    })?
+                }
+                "auto_start" => {
+                    self.sync.auto_start = value.parse().map_err(|_| {
+                        CliError::ValidationError("Invalid boolean value".to_string())
+                    })?
+                }
+                "enable_mdns" => {
+                    self.sync.enable_mdns = value.parse().map_err(|_| {
+                        CliError::ValidationError("Invalid boolean value".to_string())
+                    })?
+                }
+                "enable_relay" => {
+                    self.sync.enable_relay = value.parse().map_err(|_| {
+                        CliError::ValidationError("Invalid boolean value".to_string())
+                    })?
+                }
                 "heartbeat_interval_secs" => {
                     self.sync.heartbeat_interval_secs = value.parse().map_err(|_| {
                         CliError::ValidationError("Invalid number value".to_string())
@@ -199,9 +209,11 @@ impl Config {
                 _ => return Err(CliError::NotFound(format!("Unknown key: {}", key))),
             },
             "network" => match parts[1] {
-                "listen_port" => self.network.listen_port = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid port number".to_string())
-                })?,
+                "listen_port" => {
+                    self.network.listen_port = value
+                        .parse()
+                        .map_err(|_| CliError::ValidationError("Invalid port number".to_string()))?
+                }
                 "listen_address" => self.network.listen_address = value.to_string(),
                 _ => return Err(CliError::NotFound(format!("Unknown key: {}", key))),
             },
@@ -209,12 +221,16 @@ impl Config {
                 "level" => self.logging.level = value.to_string(),
                 "format" => self.logging.format = value.to_string(),
                 "file" => self.logging.file = value.to_string(),
-                "max_size_mb" => self.logging.max_size_mb = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid number value".to_string())
-                })?,
-                "max_files" => self.logging.max_files = value.parse().map_err(|_| {
-                    CliError::ValidationError("Invalid number value".to_string())
-                })?,
+                "max_size_mb" => {
+                    self.logging.max_size_mb = value.parse().map_err(|_| {
+                        CliError::ValidationError("Invalid number value".to_string())
+                    })?
+                }
+                "max_files" => {
+                    self.logging.max_files = value.parse().map_err(|_| {
+                        CliError::ValidationError("Invalid number value".to_string())
+                    })?
+                }
                 _ => return Err(CliError::NotFound(format!("Unknown key: {}", key))),
             },
             _ => return Err(CliError::NotFound(format!("Unknown section: {}", parts[0]))),

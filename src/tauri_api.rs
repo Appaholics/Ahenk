@@ -5,6 +5,7 @@
 #[cfg(feature = "tauri-api")]
 mod tauri_commands {
     use crate::db::operations::get_habit;
+    use crate::logic::sync_manager::SyncManager;
     use crate::logic::{
         add_item_to_blocklist, add_task_to_list, assign_task_to_block, create_habit,
         create_new_task_list, create_soundscape_preset, delete_soundscape_preset,
@@ -20,11 +21,10 @@ mod tauri_commands {
     };
     use chrono::{DateTime, NaiveDate, Utc};
     use rusqlite::Connection;
-    use std::sync::Mutex;
     use std::sync::Arc;
+    use std::sync::Mutex;
     use tauri::State;
     use uuid::Uuid;
-    use crate::logic::sync_manager::SyncManager;
 
     pub struct DbConnection(pub Mutex<Connection>);
 
@@ -454,13 +454,7 @@ mod tauri_commands {
         let user_uuid = Uuid::parse_str(&user_id).map_err(|e| e.to_string())?;
         let device_id = Uuid::new_v4(); // Assuming device_id can be generated or passed from frontend
         crate::logic::create_soundscape(
-            &mut db,
-            user_uuid,
-            device_id,
-            name,
-            file_path,
-            volume,
-            is_playing,
+            &mut db, user_uuid, device_id, name, file_path, volume, is_playing,
         )
         .map_err(|e| e.to_string())
     }
@@ -507,7 +501,8 @@ mod tauri_commands {
         let mut db = conn.0.lock().map_err(|e| e.to_string())?;
         let soundscape_uuid = Uuid::parse_str(&soundscape_id).map_err(|e| e.to_string())?;
         let device_id = Uuid::new_v4(); // Assuming device_id can be generated or passed from frontend
-        crate::logic::delete_soundscape(&mut db, device_id, soundscape_uuid).map_err(|e| e.to_string())
+        crate::logic::delete_soundscape(&mut db, device_id, soundscape_uuid)
+            .map_err(|e| e.to_string())
     }
 
     // ============= Soundscape Preset Management =============
@@ -518,8 +513,7 @@ mod tauri_commands {
     ) -> Result<Vec<crate::models::SoundscapePreset>, String> {
         let db = conn.0.lock().map_err(|e| e.to_string())?;
         let user_uuid = Uuid::parse_str(&user_id).map_err(|e| e.to_string())?;
-        crate::logic::get_soundscape_presets_for_user(&db, user_uuid)
-            .map_err(|e| e.to_string())
+        crate::logic::get_soundscape_presets_for_user(&db, user_uuid).map_err(|e| e.to_string())
     }
 
     #[tauri::command]
@@ -532,14 +526,8 @@ mod tauri_commands {
         let mut db = conn.0.lock().map_err(|e| e.to_string())?;
         let user_uuid = Uuid::parse_str(&user_id).map_err(|e| e.to_string())?;
         let device_id = Uuid::new_v4();
-        crate::logic::create_soundscape_preset(
-            &mut db,
-            user_uuid,
-            device_id,
-            name,
-            tracks,
-        )
-        .map_err(|e| e.to_string())
+        crate::logic::create_soundscape_preset(&mut db, user_uuid, device_id, name, tracks)
+            .map_err(|e| e.to_string())
     }
 
     #[tauri::command]
@@ -552,14 +540,8 @@ mod tauri_commands {
         let mut db = conn.0.lock().map_err(|e| e.to_string())?;
         let preset_uuid = Uuid::parse_str(&preset_id).map_err(|e| e.to_string())?;
         let device_id = Uuid::new_v4();
-        crate::logic::update_soundscape_preset(
-            &mut db,
-            preset_uuid,
-            device_id,
-            name,
-            tracks,
-        )
-        .map_err(|e| e.to_string())
+        crate::logic::update_soundscape_preset(&mut db, preset_uuid, device_id, name, tracks)
+            .map_err(|e| e.to_string())
     }
 
     #[tauri::command]
@@ -578,7 +560,10 @@ mod tauri_commands {
     pub fn nexus_get_sync_status(
         sync_manager_state: tauri::State<Arc<Mutex<SyncManager>>>,
     ) -> Result<(bool, Option<DateTime<Utc>>, Vec<String>, usize, bool), String> {
-        let sync_manager = sync_manager_state.inner().lock().map_err(|e| e.to_string())?;
+        let sync_manager = sync_manager_state
+            .inner()
+            .lock()
+            .map_err(|e| e.to_string())?;
         Ok((
             sync_manager.get_is_syncing(),
             sync_manager.get_last_sync_time(),
@@ -593,31 +578,43 @@ mod tauri_commands {
         user_id: String,
         sync_manager_state: tauri::State<Arc<Mutex<SyncManager>>>,
     ) -> Result<(), String> {
-        let mut sync_manager = sync_manager_state.inner().lock().map_err(|e| e.to_string())?;
+        let mut sync_manager = sync_manager_state
+            .inner()
+            .lock()
+            .map_err(|e| e.to_string())?;
         let user_uuid = Uuid::parse_str(&user_id).map_err(|e| e.to_string())?;
         // For now, request sync from the beginning of time if no last sync time is available
         let since = sync_manager.get_last_sync_time().unwrap_or_else(Utc::now);
         sync_manager.request_sync(since).map_err(|e| e.to_string())
     }
-    
+
     #[tauri::command]
     pub fn nexus_set_online_status(
         is_online: bool,
         sync_manager_state: tauri::State<Arc<Mutex<SyncManager>>>,
     ) -> Result<(), String> {
-        let mut sync_manager = sync_manager_state.inner().lock().map_err(|e| e.to_string())?;
-        sync_manager.set_online_status(is_online).map_err(|e| e.to_string())
+        let mut sync_manager = sync_manager_state
+            .inner()
+            .lock()
+            .map_err(|e| e.to_string())?;
+        sync_manager
+            .set_online_status(is_online)
+            .map_err(|e| e.to_string())
     }
-    
+
     #[tauri::command]
     pub fn nexus_sync_pending_changes(
         sync_manager_state: tauri::State<Arc<Mutex<SyncManager>>>,
     ) -> Result<(), String> {
-        let mut sync_manager = sync_manager_state.inner().lock().map_err(|e| e.to_string())?;
-        sync_manager.sync_pending_changes().map_err(|e| e.to_string())
+        let mut sync_manager = sync_manager_state
+            .inner()
+            .lock()
+            .map_err(|e| e.to_string())?;
+        sync_manager
+            .sync_pending_changes()
+            .map_err(|e| e.to_string())
     }
 }
 
 #[cfg(feature = "tauri-api")]
 pub use tauri_commands::*;
-

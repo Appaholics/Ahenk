@@ -27,8 +27,7 @@ pub async fn execute(
 
     // Create parent directory if needed
     if let Some(parent) = std::path::Path::new(&db_path_expanded).parent() {
-        fs::create_dir_all(parent)
-            .map_err(|e| CliError::IoError(e))?;
+        fs::create_dir_all(parent).map_err(|e| CliError::IoError(e))?;
     }
 
     // Initialize database
@@ -45,8 +44,7 @@ pub async fn execute(
         let pass = if let Some(p) = password {
             p.to_string()
         } else {
-            rpassword::prompt_password("Password: ")
-                .map_err(|e| CliError::IoError(e))?
+            rpassword::prompt_password("Password: ").map_err(|e| CliError::IoError(e))?
         };
 
         let user_obj = logic::register_user(&conn, user.to_string(), mail.to_string(), pass)
@@ -61,13 +59,8 @@ pub async fn execute(
             .and_then(|h| h.into_string().ok())
             .unwrap_or_else(|| "cli-device".to_string());
 
-        let device = logic::add_device_to_user(
-            &conn,
-            user_obj.user_id,
-            "cli".to_string(),
-            None,
-        )
-        .map_err(|e| CliError::DatabaseError(e))?;
+        let device = logic::add_device_to_user(&conn, user_obj.user_id, "cli".to_string(), None)
+            .map_err(|e| CliError::DatabaseError(e))?;
 
         output::success(&format!("Device registered ({})", device.device_id));
 
@@ -101,10 +94,19 @@ pub async fn execute(
 
     if config.user.is_some() {
         output::key_value("User", username.unwrap_or("N/A"));
-        output::key_value("Device", &config.device.as_ref().map(|d| d.id.as_str()).unwrap_or("N/A"));
+        output::key_value(
+            "Device",
+            &config
+                .device
+                .as_ref()
+                .map(|d| d.id.as_str())
+                .unwrap_or("N/A"),
+        );
     } else {
         println!();
-        output::info("No user created. Run 'nexus-cli init --user <USERNAME> --email <EMAIL>' to create a user.");
+        output::info(
+            "No user created. Run 'nexus-cli init --user <USERNAME> --email <EMAIL>' to create a user.",
+        );
     }
 
     println!();

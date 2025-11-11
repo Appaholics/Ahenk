@@ -1,4 +1,3 @@
-use libp2p::identity;
 /// Example: Device Authorization Handshake (QR Pairing)
 ///
 /// This example demonstrates the complete device pairing workflow:
@@ -9,7 +8,8 @@ use libp2p::identity;
 ///
 /// Run this example:
 ///   cargo run --example device_pairing
-use nexus_core::*;
+use cfost::*;
+use libp2p::identity;
 use std::io::{self, Write};
 
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {

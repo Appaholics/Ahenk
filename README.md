@@ -1,14 +1,17 @@
-# nexus-core
+# CFOST
+
+**Conflict-Free Offline Synchronization Tool**
 
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](tests/)
 [![Rust](https://img.shields.io/badge/rust-nightly%202024-orange)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](#license)
+[![crates.io](https://img.shields.io/crates/v/cfost)](https://crates.io/crates/cfost)
 
 > Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture.
 
 ## Overview
 
-`nexus-core` is a batteries-included Rust library that provides everything you need to synchronize databases across devices in your application ecosystem. It handles the complex distributed systems challenges so you can focus on building your app.
+**CFOST** (Conflict-Free Offline Synchronization Tool) is a batteries-included Rust library that provides everything you need to synchronize databases across devices in your application ecosystem. It handles the complex distributed systems challenges so you can focus on building your app.
 
 ### Key Features
 
@@ -39,13 +42,15 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-nexus-core = { git = "https://github.com/kodfikirsanat/focussuite" }
+cfost = { git = "https://github.com/kodfikirsanat/cfost" }
+# Or from crates.io (when published):
+# cfost = "0.1"
 ```
 
 ### Basic Usage
 
 ```rust
-use nexus_core::{initialize_database, register_user, add_device_to_user};
+use cfost::{initialize_database, register_user, add_device_to_user};
 
 // Initialize database (auto-migrates schema)
 let conn = initialize_database("app.db")?;
@@ -119,7 +124,7 @@ println!("User {} registered on device {}", user.user_name, device.device_id);
 ### 1. Initialize Database
 
 ```rust
-use nexus_core::initialize_database;
+use cfost::initialize_database;
 
 let conn = initialize_database("app.db")?;
 // Creates users, devices, oplog, and peers tables automatically
@@ -128,7 +133,7 @@ let conn = initialize_database("app.db")?;
 ### 2. User & Device Management
 
 ```rust
-use nexus_core::{register_user, add_device_to_user, login_user};
+use cfost::{register_user, add_device_to_user, login_user};
 
 // Register user
 let user = register_user(&conn, username, email, password)?;
@@ -143,7 +148,7 @@ let device = add_device_to_user(&conn, user.user_id, "android", None)?;
 ### 3. Track Operations in Your App
 
 ```rust
-use nexus_core::{build_oplog_entry, local_apply};
+use cfost::{build_oplog_entry, local_apply};
 
 // Your app creates a record
 conn.execute(
@@ -164,7 +169,7 @@ local_apply(&mut conn, &entry)?;
 ### 4. Set Up P2P Sync
 
 ```rust
-use nexus_core::{create_swarm, P2PConfig, SyncMessage};
+use cfost::{create_swarm, P2PConfig, SyncMessage};
 
 // Create P2P swarm with auto-discovery
 let mut swarm = create_swarm().await?;
@@ -192,7 +197,7 @@ while let Some(event) = swarm.select_next_some().await {
 ### 5. Implement Conflict Resolution
 
 ```rust
-use nexus_core::{merge, OplogEntry, HybridLogicalClock};
+use cfost::{merge, OplogEntry, HybridLogicalClock};
 
 // Receive operations from peer
 let remote_ops: Vec<OplogEntry> = get_from_peer();
@@ -249,7 +254,7 @@ See [docs/CLI_USAGE.md](docs/CLI_USAGE.md) for complete CLI documentation.
 ### Custom CRDT Implementation
 
 ```rust
-use nexus_core::{HybridLogicalClock, OplogEntry};
+use cfost::{HybridLogicalClock, OplogEntry};
 
 // Use HLC for causal ordering
 let hlc = HybridLogicalClock::now();
@@ -268,7 +273,7 @@ let entry = OplogEntry {
 ### Device Authorization Workflow
 
 ```rust
-use nexus_core::{DeviceAuthManager, AuthorizerWorkflow, NewDeviceWorkflow};
+use cfost::{DeviceAuthManager, AuthorizerWorkflow, NewDeviceWorkflow};
 
 // On device with account (authorizer)
 let manager = DeviceAuthManager::new(&conn, user_id, device_id);

@@ -6,9 +6,9 @@
 //! - OplogEntry (CRDT operation log)
 //! - Peer (P2P peer tracking)
 
+use cfost::db::operations;
+use cfost::models::{Device, OplogEntry, Peer, User};
 use chrono::Utc;
-use nexus_core::db::operations;
-use nexus_core::models::{Device, OplogEntry, Peer, User};
 use uuid::Uuid;
 
 #[test]
@@ -175,8 +175,8 @@ fn test_oplog_and_peer_crud_operations() {
     operations::create_peer(&conn, &peer).expect("Failed to create peer");
 
     // Test Peer READ by user_id
-    let peers = operations::get_peers_by_user_id(&conn, user_id)
-        .expect("Failed to get peers by user");
+    let peers =
+        operations::get_peers_by_user_id(&conn, user_id).expect("Failed to get peers by user");
     assert_eq!(peers.len(), 1);
     assert_eq!(peers[0].last_known_ip, Some("192.168.1.100".to_string()));
 
@@ -229,8 +229,8 @@ fn test_multiple_devices_per_user() {
     operations::create_device(&conn, &device3).expect("Failed to create device 3");
 
     // Verify all devices are retrieved
-    let devices = operations::get_devices_by_user_id(&conn, user_id)
-        .expect("Failed to get devices");
+    let devices =
+        operations::get_devices_by_user_id(&conn, user_id).expect("Failed to get devices");
     assert_eq!(devices.len(), 3);
 
     // Verify device types

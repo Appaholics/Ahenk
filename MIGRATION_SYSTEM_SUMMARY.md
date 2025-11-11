@@ -212,7 +212,7 @@ task: { content: "Buy eggs", is_completed: false, priority: 5 }
 ### Public Functions
 
 ```rust
-use nexus_core::{
+use cfost::{
     initialize_database,
     get_current_version,
     get_migration_history,

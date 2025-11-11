@@ -213,7 +213,7 @@ nexus-core = { version = "0.1.0", features = ["tauri-api"] }
 After installation, verify it works:
 
 ```rust
-use nexus_core::{initialize_database, register_user};
+use cfost::{initialize_database, register_user};
 
 fn main() -> Result<(), nexus_core::NexusError> {
     // Initialize database

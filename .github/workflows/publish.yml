@@ -94,25 +94,25 @@ jobs:
           # Linux builds
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            artifact_name: libnexus_core.so
-            asset_name: libnexus_core-linux-x86_64.so
+            artifact_name: libcfost.so
+            asset_name: libcfost-linux-x86_64.so
 
           # macOS builds
           - os: macos-latest
             target: aarch64-apple-darwin
-            artifact_name: libnexus_core.dylib
-            asset_name: libnexus_core-macos-arm64.dylib
+            artifact_name: libcfost.dylib
+            asset_name: libcfost-macos-arm64.dylib
 
           - os: macos-latest
             target: x86_64-apple-darwin
-            artifact_name: libnexus_core.dylib
-            asset_name: libnexus_core-macos-x86_64.dylib
+            artifact_name: libcfost.dylib
+            asset_name: libcfost-macos-x86_64.dylib
 
           # Windows builds
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact_name: nexus_core.dll
-            asset_name: nexus_core-windows-x64.dll
+            artifact_name: cfost.dll
+            asset_name: cfost-windows-x64.dll
 
     steps:
       - uses: actions/checkout@v4
@@ -183,7 +183,7 @@ jobs:
         run: cargo doc --no-deps --all-features
 
       - name: Add index.html redirect
-        run: echo '<meta http-equiv="refresh" content="0; url=nexus_core">' > target/doc/index.html
+        run: echo '<meta http-equiv="refresh" content="0; url=cfost">' > target/doc/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -191,4 +191,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/doc
-          cname: nexus-core.example.com  # Optional: Replace with your custom domain
+          cname: cfost.dev  # Optional: Replace with your custom domain

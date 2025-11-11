@@ -291,9 +291,8 @@ pub fn get_peers_by_user_id(conn: &Connection, user_id: Uuid) -> Result<Vec<Peer
 
 /// Get all peers in the database
 pub fn get_all_peers(conn: &Connection) -> Result<Vec<Peer>> {
-    let mut stmt = conn.prepare(
-        "SELECT peer_id, user_id, device_id, last_known_ip, last_sync_time FROM peers"
-    )?;
+    let mut stmt = conn
+        .prepare("SELECT peer_id, user_id, device_id, last_known_ip, last_sync_time FROM peers")?;
     let rows = stmt.query_map(params![], row_to_peer)?;
 
     let mut peers = Vec::new();

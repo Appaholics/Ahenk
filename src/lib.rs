@@ -1,11 +1,11 @@
-//! # Nexus Core
+//! # CFOST - Conflict-Free Offline Synchronization Tool
 //!
 //! Cross-platform database synchronization infrastructure with P2P networking
 //! and CRDT-based conflict resolution.
 //!
 //! ## Overview
 //!
-//! Nexus-core provides a complete solution for synchronizing databases across devices:
+//! CFOST provides a complete solution for synchronizing databases across devices:
 //! - **User authentication** with Argon2 password hashing
 //! - **Device management** and authorization
 //! - **P2P networking** using libp2p (mDNS, relay, DCUtR)
@@ -16,10 +16,10 @@
 //! ## Quick Start
 //!
 //! ```rust,no_run
-//! use nexus_core::{initialize_database, register_user, login_user, add_device_to_user};
+//! use cfost::{initialize_database, register_user, login_user, add_device_to_user};
 //!
 //! // Initialize database with automatic migrations
-//! let conn = initialize_database("nexus.db").unwrap();
+//! let conn = initialize_database("app.db").unwrap();
 //!
 //! // Register a new user
 //! let user = register_user(

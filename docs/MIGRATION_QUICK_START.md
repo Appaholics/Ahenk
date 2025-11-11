@@ -7,7 +7,7 @@ Quick reference for common migration tasks in nexus-core.
 ### Check Your Database Version
 
 ```rust
-use nexus_core::{initialize_database, get_current_version};
+use cfost::{initialize_database, get_current_version};
 
 let conn = initialize_database("nexus.db")?;
 let version = get_current_version(&conn)?;
@@ -19,7 +19,7 @@ println!("Database schema version: {}", version);
 Just open the database - migrations run automatically:
 
 ```rust
-use nexus_core::initialize_database;
+use cfost::initialize_database;
 
 // Opens database and applies any pending migrations
 let conn = initialize_database("nexus.db")?;
@@ -28,7 +28,7 @@ let conn = initialize_database("nexus.db")?;
 ### View Migration History
 
 ```rust
-use nexus_core::{initialize_database, get_migration_history};
+use cfost::{initialize_database, get_migration_history};
 
 let conn = initialize_database("nexus.db")?;
 let history = get_migration_history(&conn)?;

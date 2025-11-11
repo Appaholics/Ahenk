@@ -1,5 +1,5 @@
+use cfost::cli::{commands, config::Config, errors::CliResult, output};
 use clap::{Parser, Subcommand};
-use nexus_core::cli::{commands, config::Config, errors::CliResult, output};
 use std::process;
 
 #[derive(Parser)]
@@ -271,11 +271,19 @@ async fn main() {
             email,
             password,
         } => {
-            commands::init::execute(path.as_deref(), user.as_deref(), email.as_deref(), password.as_deref()).await
+            commands::init::execute(
+                path.as_deref(),
+                user.as_deref(),
+                email.as_deref(),
+                password.as_deref(),
+            )
+            .await
         }
-        Commands::Start { daemon, port, config: config_path } => {
-            commands::daemon::start(daemon, port, config_path.as_deref(), &config).await
-        }
+        Commands::Start {
+            daemon,
+            port,
+            config: config_path,
+        } => commands::daemon::start(daemon, port, config_path.as_deref(), &config).await,
         Commands::Stop => commands::daemon::stop(&config).await,
         Commands::Restart { daemon } => commands::daemon::restart(daemon, &config).await,
         Commands::Status { watch, interval } => {
@@ -286,7 +294,9 @@ async fn main() {
             PeerCommands::List => commands::peer::list(cli.json, &config).await,
             PeerCommands::Add { multiaddr } => commands::peer::add(&multiaddr, &config).await,
             PeerCommands::Remove { peer_id } => commands::peer::remove(&peer_id, &config).await,
-            PeerCommands::Info { peer_id } => commands::peer::info(&peer_id, cli.json, &config).await,
+            PeerCommands::Info { peer_id } => {
+                commands::peer::info(&peer_id, cli.json, &config).await
+            }
         },
         Commands::Device(device_cmd) => match device_cmd {
             DeviceCommands::List => commands::device::list(cli.json, &config).await,
@@ -294,10 +304,14 @@ async fn main() {
                 commands::device::pair(&device_type, name.as_deref(), &config).await
             }
             DeviceCommands::Authorize { code } => commands::device::authorize(&code, &config).await,
-            DeviceCommands::Remove { device_id } => commands::device::remove(&device_id, &config).await,
+            DeviceCommands::Remove { device_id } => {
+                commands::device::remove(&device_id, &config).await
+            }
         },
         Commands::Config(config_cmd) => match config_cmd {
-            ConfigCommands::Set { key, value } => commands::config::set(&key, &value, &config).await,
+            ConfigCommands::Set { key, value } => {
+                commands::config::set(&key, &value, &config).await
+            }
             ConfigCommands::Get { key } => commands::config::get(&key, &config).await,
             ConfigCommands::List => commands::config::list(cli.json, &config).await,
             ConfigCommands::Edit => commands::config::edit(&config).await,

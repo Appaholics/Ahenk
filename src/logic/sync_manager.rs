@@ -1,15 +1,18 @@
-use rusqlite::Connection;
-use std::sync::{Arc, Mutex};
-use std::collections::VecDeque;
-use uuid::Uuid;
+use crate::logic::sync::{
+    NexusBehaviour, NexusBehaviourEvent, P2PConfig, SyncMessage, connect_to_bootstrap_nodes,
+    connect_to_relay_servers, create_swarm, encode_sync_message,
+};
+use crate::models::OplogEntry;
 use chrono::{DateTime, Utc};
 use libp2p::PeerId;
+use libp2p::swarm::SwarmEvent;
+use libp2p::{Swarm, gossipsub, identity, mdns};
+use rusqlite::Connection;
+use std::collections::VecDeque;
+use std::sync::{Arc, Mutex};
 #[cfg(feature = "tauri-api")]
 use tauri::AppHandle;
-use crate::models::OplogEntry;
-use libp2p::{Swarm, gossipsub, identity, mdns};
-use libp2p::swarm::SwarmEvent;
-use crate::logic::sync::{NexusBehaviour, NexusBehaviourEvent, P2PConfig, create_swarm, connect_to_bootstrap_nodes, connect_to_relay_servers, SyncMessage, encode_sync_message};
+use uuid::Uuid;
 
 /// Sync manager for handling P2P network events and synchronization
 pub struct SyncManager {
@@ -217,7 +220,9 @@ impl SyncManager {
         let pending_status = serde_json::json!({
             "pendingCount": self.pending_changes.len(),
         });
-        let _ = self.app_handle.emit("pending-changes-update", pending_status);
+        let _ = self
+            .app_handle
+            .emit("pending-changes-update", pending_status);
     }
 
     #[cfg(not(feature = "tauri-api"))]
@@ -225,36 +230,36 @@ impl SyncManager {
         // No-op when tauri feature is not enabled
         let _ = self.pending_changes.len();
     }
-    
+
     /// Add a change to the pending queue when offline
     pub fn add_pending_change(&mut self, entry: OplogEntry) {
         self.pending_changes.push_back(entry);
         self.emit_pending_changes();
     }
-    
+
     /// Set the online status of the sync manager
     pub fn set_online_status(&mut self, is_online: bool) -> Result<(), Box<dyn std::error::Error>> {
         let was_offline = !self.is_online;
         self.is_online = is_online;
-        
+
         // If we just came back online and have pending changes, sync them
         if is_online && was_offline && !self.pending_changes.is_empty() {
             self.sync_pending_changes()?;
         }
-        
+
         self.emit_sync_status();
         Ok(())
     }
-    
+
     /// Sync any pending changes that accumulated while offline
     pub fn sync_pending_changes(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         if !self.is_online || self.pending_changes.is_empty() {
             return Ok(());
         }
-        
+
         // Convert queue to vector for sending
         let pending_entries: Vec<OplogEntry> = self.pending_changes.drain(..).collect();
-        
+
         // If no peers are connected, we can't sync yet - return the entries to the queue
         if self.connected_peers.is_empty() {
             for entry in pending_entries {
@@ -262,14 +267,14 @@ impl SyncManager {
             }
             return Ok(());
         }
-        
+
         // Send the pending changes
         self.send_sync_data(pending_entries)?;
         self.emit_pending_changes();
-        
+
         Ok(())
     }
-    
+
     /// Get the number of pending changes
     pub fn get_pending_changes_count(&self) -> usize {
         self.pending_changes.len()

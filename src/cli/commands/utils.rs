@@ -7,8 +7,7 @@ use std::fs;
 
 pub async fn query(sql: &str, json: bool, config: &Config) -> CliResult<()> {
     let db_path = config.db_path();
-    let conn = initialize_database(&db_path)
-        .map_err(|e| CliError::DatabaseError(e.to_string()))?;
+    let conn = initialize_database(&db_path).map_err(|e| CliError::DatabaseError(e.to_string()))?;
 
     // Execute query
     let mut stmt = conn
@@ -77,10 +76,10 @@ pub async fn oplog(
     config: &Config,
 ) -> CliResult<()> {
     let db_path = config.db_path();
-    let conn = initialize_database(&db_path)
-        .map_err(|e| CliError::DatabaseError(e.to_string()))?;
+    let conn = initialize_database(&db_path).map_err(|e| CliError::DatabaseError(e.to_string()))?;
 
-    let mut sql = "SELECT id, device_id, timestamp, table_name, op_type, data FROM oplog".to_string();
+    let mut sql =
+        "SELECT id, device_id, timestamp, table_name, op_type, data FROM oplog".to_string();
     let mut conditions = Vec::new();
 
     if let Some(ts) = since {
@@ -176,7 +175,13 @@ pub async fn info(json: bool) -> CliResult<()> {
                 ("Version", version),
                 ("OS", std::env::consts::OS),
                 ("Architecture", std::env::consts::ARCH),
-                ("Hostname", &hostname::get().ok().and_then(|h| h.into_string().ok()).unwrap_or_else(|| "Unknown".to_string())),
+                (
+                    "Hostname",
+                    &hostname::get()
+                        .ok()
+                        .and_then(|h| h.into_string().ok())
+                        .unwrap_or_else(|| "Unknown".to_string()),
+                ),
             ],
         );
     }

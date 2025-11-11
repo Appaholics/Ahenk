@@ -97,7 +97,7 @@ When a client starts with a new version of the app:
 #### Example
 
 ```rust
-use nexus_core::initialize_database;
+use cfost::initialize_database;
 
 // This will automatically upgrade the database if needed
 let conn = initialize_database("nexus.db")?;
@@ -108,7 +108,7 @@ let conn = initialize_database("nexus.db")?;
 To check which version your database is at:
 
 ```rust
-use nexus_core::{initialize_database, get_current_version};
+use cfost::{initialize_database, get_current_version};
 
 let conn = initialize_database("nexus.db")?;
 let version = get_current_version(&conn)?;
@@ -124,7 +124,7 @@ SELECT MAX(version) FROM schema_version;
 ### Viewing Migration History
 
 ```rust
-use nexus_core::{initialize_database, get_migration_history};
+use cfost::{initialize_database, get_migration_history};
 
 let conn = initialize_database("nexus.db")?;
 let history = get_migration_history(&conn)?;
@@ -140,7 +140,7 @@ For advanced users who want explicit control:
 
 ```rust
 use rusqlite::Connection;
-use nexus_core::db::migrations::{apply_migrations, get_current_version};
+use cfost::db::migrations::{apply_migrations, get_current_version};
 
 // Open connection without auto-migration
 let conn = Connection::open("nexus.db")?;

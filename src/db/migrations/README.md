@@ -101,7 +101,7 @@ SELECT * FROM schema_version ORDER BY version;
 
 Or use the Rust API:
 ```rust
-use nexus_core::db::migrations::{get_current_version, get_migration_history};
+use cfost::db::migrations::{get_current_version, get_migration_history};
 
 let conn = initialize_database("nexus.db")?;
 let current_version = get_current_version(&conn)?;

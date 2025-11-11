@@ -7,10 +7,10 @@
 //! - Peer management
 
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use cfost::db::operations;
+use cfost::logic;
+use cfost::models::{Device, User};
 use chrono::Utc;
-use nexus_core::db::operations;
-use nexus_core::logic;
-use nexus_core::models::{Device, User};
 use rusqlite::Connection;
 use uuid::Uuid;
 
@@ -205,15 +205,13 @@ fn test_add_device_to_user_and_get_user_devices() {
     assert!(device.last_seen.is_some());
 
     // Verify device can be retrieved
-    let devices =
-        logic::get_user_devices(&conn, user.user_id).expect("Fetching devices failed");
+    let devices = logic::get_user_devices(&conn, user.user_id).expect("Fetching devices failed");
     assert_eq!(devices.len(), 1);
     assert_eq!(devices[0].device_id, device.device_id);
 
     // Test validation: empty device type should fail
-    let empty_type_err =
-        logic::add_device_to_user(&conn, user.user_id, "   ".to_string(), None)
-            .expect_err("Expected empty device type to fail");
+    let empty_type_err = logic::add_device_to_user(&conn, user.user_id, "   ".to_string(), None)
+        .expect_err("Expected empty device type to fail");
     assert!(empty_type_err.contains("Device type"));
 }
 
@@ -222,13 +220,8 @@ fn test_add_device_to_nonexistent_user() {
     let conn = setup_empty_db();
     let nonexistent_user_id = Uuid::new_v4();
 
-    let err = logic::add_device_to_user(
-        &conn,
-        nonexistent_user_id,
-        "mobile".to_string(),
-        None,
-    )
-    .expect_err("Expected adding device to nonexistent user to fail");
+    let err = logic::add_device_to_user(&conn, nonexistent_user_id, "mobile".to_string(), None)
+        .expect_err("Expected adding device to nonexistent user to fail");
 
     assert!(err.contains("User not found"));
 }
@@ -246,7 +239,7 @@ fn test_generate_device_id() {
 
 #[test]
 fn test_sync_message_encode_decode() {
-    use nexus_core::logic::sync::{SyncMessage, decode_sync_message, encode_sync_message};
+    use cfost::logic::sync::{SyncMessage, decode_sync_message, encode_sync_message};
 
     let user_id = Uuid::new_v4();
     let device_id = Uuid::new_v4();
@@ -299,7 +292,7 @@ fn test_sync_message_encode_decode() {
 
 #[test]
 fn test_update_peer_info() {
-    use nexus_core::logic::sync::update_peer_info;
+    use cfost::logic::sync::update_peer_info;
 
     let (conn, user_id, _device_id) = setup_db_with_user_and_device();
 
@@ -344,7 +337,7 @@ fn test_sync_with_peer() {
     // Original test used task lists and tasks which are no longer in core.
     // Apps should implement their own sync tests using their data types.
 
-    use nexus_core::crdt;
+    use cfost::crdt;
 
     // Setup two "devices" with separate databases but same user
     let (mut conn1, user_id, device_id1) = setup_db_with_user_and_device();

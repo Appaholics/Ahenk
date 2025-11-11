@@ -4,7 +4,7 @@ use crate::cli::output;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Seek, SeekFrom};
 use std::path::Path;
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 pub async fn view(
     follow: bool,
@@ -33,10 +33,7 @@ fn tail_lines(log_path: &str, lines: usize, level: Option<&str>) -> CliResult<()
     let file = File::open(log_path)?;
     let reader = BufReader::new(file);
 
-    let all_lines: Vec<String> = reader
-        .lines()
-        .filter_map(|line| line.ok())
-        .collect();
+    let all_lines: Vec<String> = reader.lines().filter_map(|line| line.ok()).collect();
 
     let start_idx = if all_lines.len() > lines {
         all_lines.len() - lines

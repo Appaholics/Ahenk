@@ -10,13 +10,11 @@ pub struct Migration {
 
 /// List of all migrations in order
 /// Each migration should be numbered sequentially starting from 1
-const MIGRATIONS: &[Migration] = &[
-    Migration {
-        version: 1,
-        description: "Initial schema - database synchronization infrastructure",
-        sql: include_str!("migrations/001_initial_schema.sql"),
-    },
-];
+const MIGRATIONS: &[Migration] = &[Migration {
+    version: 1,
+    description: "Initial schema - database synchronization infrastructure",
+    sql: include_str!("migrations/001_initial_schema.sql"),
+}];
 
 /// Initialize the schema_version table if it doesn't exist
 fn ensure_schema_version_table(conn: &Connection) -> Result<()> {

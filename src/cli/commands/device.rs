@@ -13,8 +13,7 @@ pub async fn list(json: bool, config: &Config) -> CliResult<()> {
         .map_err(|_| CliError::ConfigError("Invalid user ID".to_string()))?;
 
     let db_path = config.db_path();
-    let conn = initialize_database(&db_path)
-        .map_err(|e| CliError::DatabaseError(e.to_string()))?;
+    let conn = initialize_database(&db_path).map_err(|e| CliError::DatabaseError(e.to_string()))?;
 
     let devices = get_devices_by_user_id(&conn, user_id)
         .map_err(|e| CliError::DatabaseError(e.to_string()))?;
@@ -43,7 +42,12 @@ pub async fn list(json: bool, config: &Config) -> CliResult<()> {
             table.add_row(prettytable::Row::new(vec![
                 prettytable::Cell::new(&device.device_id.to_string()),
                 prettytable::Cell::new(&device.device_type),
-                prettytable::Cell::new(&device.last_seen.map(|t| t.to_string()).unwrap_or_else(|| "Never".to_string())),
+                prettytable::Cell::new(
+                    &device
+                        .last_seen
+                        .map(|t| t.to_string())
+                        .unwrap_or_else(|| "Never".to_string()),
+                ),
             ]));
         }
 
@@ -54,7 +58,10 @@ pub async fn list(json: bool, config: &Config) -> CliResult<()> {
 }
 
 pub async fn pair(device_type: &str, name: Option<&str>, config: &Config) -> CliResult<()> {
-    output::step(&format!("Generating pairing QR code for {} device", device_type));
+    output::step(&format!(
+        "Generating pairing QR code for {} device",
+        device_type
+    ));
 
     // TODO: Implement device pairing with QR code generation
     output::warning("Device pairing not yet fully implemented");

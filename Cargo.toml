@@ -1,15 +1,15 @@
 [package]
-name = "nexus-core"
+name = "cfost"
 version = "0.1.0"
 edition = "2024"
-authors = ["FocusSuite Contributors"]
+authors = ["CFOST Contributors"]
 license = "MIT OR Apache-2.0"
-description = "Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture"
-repository = "https://github.com/kodfikirsanat/focussuite"
-homepage = "https://github.com/kodfikirsanat/focussuite"
-documentation = "https://docs.rs/nexus-core"
+description = "CFOST (Conflict-Free Offline Synchronization Tool) - Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture"
+repository = "https://github.com/kodfikirsanat/cfost"
+homepage = "https://github.com/kodfikirsanat/cfost"
+documentation = "https://docs.rs/cfost"
 readme = "README.md"
-keywords = ["database", "sync", "p2p", "crdt", "libp2p"]
+keywords = ["database", "sync", "p2p", "crdt", "offline-first"]
 categories = ["database", "network-programming", "authentication", "data-structures"]
 exclude = [
     "target/",
@@ -24,7 +24,7 @@ exclude = [
 ]
 
 [lib]
-name = "nexus_core"
+name = "cfost"
 # Support both static and dynamic linking
 crate-type = ["staticlib", "cdylib", "rlib"]
 
@@ -92,8 +92,8 @@ cli = [
 tauri-api = ["tauri"]
 
 [[bin]]
-name = "nexus-cli"
-path = "src/bin/nexus-cli.rs"
+name = "cfost-cli"
+path = "src/bin/cfost-cli.rs"
 required-features = ["cli"]
 
 [profile.release]
