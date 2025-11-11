@@ -13,23 +13,8 @@ pub struct Migration {
 const MIGRATIONS: &[Migration] = &[
     Migration {
         version: 1,
-        description: "Initial schema with all core tables",
+        description: "Initial schema - database synchronization infrastructure",
         sql: include_str!("migrations/001_initial_schema.sql"),
-    },
-    Migration {
-        version: 2,
-        description: "Add pomodoro_sessions table for tracking completed focus sessions",
-        sql: include_str!("migrations/002_add_pomodoro_sessions.sql"),
-    },
-    Migration {
-        version: 3,
-        description: "Add user_preferences table for synced settings",
-        sql: include_str!("migrations/003_add_user_preferences.sql"),
-    },
-    Migration {
-        version: 4,
-        description: "Add soundscape_presets and soundscape_tracks tables for soundscape management",
-        sql: include_str!("migrations/004_add_soundscape_presets.sql"),
     },
 ];
 

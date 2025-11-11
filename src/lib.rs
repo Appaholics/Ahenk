@@ -1,32 +1,46 @@
 //! # Nexus Core
 //!
-//! Core library for the FocusSuite nexus system, providing database operations,
-//! business logic, and peer-to-peer synchronization capabilities.
+//! Cross-platform database synchronization infrastructure with P2P networking
+//! and CRDT-based conflict resolution.
 //!
-//! ## Modules
+//! ## Overview
 //!
-//! - `models`: Data structures for users, tasks, habits, and other entities
-//! - `db`: Database operations and initialization
-//! - `logic`: Business logic for user management, tasks, habits, etc.
-//! - `sync`: Peer-to-peer synchronization using libp2p
-//! - `error`: Error types and result aliases
+//! Nexus-core provides a complete solution for synchronizing databases across devices:
+//! - **User authentication** with Argon2 password hashing
+//! - **Device management** and authorization
+//! - **P2P networking** using libp2p (mDNS, relay, DCUtR)
+//! - **CRDT synchronization** with hybrid logical clocks
+//! - **Operation log** for tracking all changes
+//! - **Offline-first** architecture with conflict resolution
 //!
-//! ## Example
+//! ## Quick Start
 //!
 //! ```rust,no_run
-//! use nexus_core::{initialize_database, logic, models::User};
+//! use nexus_core::{initialize_database, register_user, login_user, add_device_to_user};
 //!
-//! // Initialize database
+//! // Initialize database with automatic migrations
 //! let conn = initialize_database("nexus.db").unwrap();
 //!
 //! // Register a new user
-//! let user = logic::register_user(
+//! let user = register_user(
 //!     &conn,
 //!     "alice".to_string(),
 //!     "alice@example.com".to_string(),
 //!     "secure_password".to_string(),
 //! ).unwrap();
+//!
+//! // Add a device
+//! let device = add_device_to_user(&conn, user.user_id, "ios".to_string(), None).unwrap();
 //! ```
+//!
+//! ## Modules
+//!
+//! - `models`: Core data structures (User, Device, OplogEntry, Peer)
+//! - `db`: Database operations and migrations
+//! - `logic`: Business logic (user management, device management, sync)
+//! - `crdt`: CRDT implementation with hybrid logical clocks
+//! - `auth`: Device authorization workflows
+//! - `error`: Error types and result aliases
 
 // Internal modules
 pub mod auth;
@@ -42,123 +56,81 @@ pub mod tauri_api;
 #[cfg(feature = "cli")]
 pub mod cli;
 
-// Re-export error types for convenient usage
+// ============================================================================
+// Error Types
+// ============================================================================
+
 pub use error::{NexusError, Result};
 
-// Re-export all model types
-pub use models::{
-    Block, BlockedItem, Device, FavoriteSound, Habit, HabitEntry, OplogEntry, Peer, Pomodoro,
-    Sound, Task, TaskBlock, TaskList, User,
-};
+// ============================================================================
+// Core Models
+// ============================================================================
 
-// Re-export database migration functions
+pub use models::{Device, OplogEntry, Peer, User};
+
+// ============================================================================
+// Database Operations
+// ============================================================================
+
+// Initialization and migrations
 pub use db::migrations::{apply_migrations, get_current_version, get_migration_history};
+pub use db::operations::initialize_database;
 
-// Re-export key database operations
+// User operations
+pub use db::operations::{create_user, get_user, get_user_by_mail, get_user_by_name};
+
+// Device operations
 pub use db::operations::{
-    // Block operations
-    create_block,
-    // Blocked items operations
-    create_blocked_item,
-    // Device operations
-    create_device,
-    create_favorite_sound,
-    // Habit operations
-    create_habit,
-    create_habit_entry,
-    // Oplog operations
-    create_oplog_entry,
-    // Peer operations
-    create_peer,
-    // Pomodoro operations
-    create_pomodoro,
-    // Sound operations
-    create_sound,
-    // Task operations
-    create_task,
-    create_task_block,
-    // Task list operations
-    create_task_list,
-    // User operations
-    create_user,
-    delete_favorite_sound,
-    get_active_blocked_items_by_user_id,
-    get_all_peers,
-    get_all_sounds,
-    get_block,
-    get_device,
-    get_devices_by_user_id,
-    get_favorite_sounds_by_user_id,
-    get_habit,
-    get_habit_entries_sorted_by_date,
-    get_oplog_entries_since,
-    get_peer,
-    get_peers_by_user_id,
-    get_pomodoros_by_user_id,
-    get_sound,
-    get_sounds_by_category,
-    get_task,
-    get_task_block,
-    get_task_list,
-    get_task_lists_by_user_id,
-    get_tasks_by_block_id,
-    get_tasks_by_list_id,
-    get_tasks_due_on_date_for_user,
-    get_user,
-    get_user_by_mail,
-    get_user_by_name,
-    initialize_database,
-    update_device_last_seen,
-    update_task_status,
+    create_device, get_device, get_devices_by_user_id, update_device_last_seen,
 };
 
-// Re-export key business logic functions
-pub use logic::{
-    add_device_to_user,
-    // Blocklist management
-    add_item_to_blocklist,
-    // Task management
-    add_task_to_list,
-    // Note: apply_oplog_entry removed - use crdt::local_apply instead
-    assign_task_to_block,
-    // Habit management
-    create_habit as create_new_habit,
-    create_new_task_list,
-    get_active_blocklist,
-    get_all_pomodoro_presets,
-    // Task list management
-    get_all_task_lists_for_user,
-    get_all_tasks_in_list,
-    get_habit_streak,
-    get_tasks_due_today,
-    get_tasks_for_a_specific_block,
-    get_user_devices,
-    log_habit_completion,
-    login_user,
-    mark_task_as_complete,
-    // User management
-    register_user,
-    // Pomodoro presets
-    save_pomodoro_preset,
-    // Time blocking
-    schedule_block,
-};
+// OplogEntry operations
+pub use db::operations::{create_oplog_entry, get_oplog_entries_since};
 
-// Re-export P2P sync types and functions
+// Peer operations
+pub use db::operations::{create_peer, get_all_peers, get_peer, get_peers_by_user_id};
+
+// ============================================================================
+// Business Logic
+// ============================================================================
+
+// User management
+pub use logic::{add_device_to_user, get_user_devices, login_user, register_user};
+
+// Oplog entry builder helper
+pub use logic::build_oplog_entry;
+
+// ============================================================================
+// P2P Synchronization
+// ============================================================================
+
 pub use logic::sync::{
     NexusBehaviour, P2PConfig, SyncMessage, connect_to_bootstrap_nodes, connect_to_relay_servers,
     create_swarm, create_swarm_default, decode_sync_message, encode_sync_message,
     generate_device_id, handle_sync_message, parse_multiaddr_peer_id, update_peer_info,
 };
 
-// Re-export sync manager
+// Sync manager for orchestrating P2P operations
 pub use logic::sync_manager::SyncManager;
 
-// Re-export device authorization types and workflows
+// ============================================================================
+// Device Authorization
+// ============================================================================
+
 pub use auth::{
     AuthChallenge, AuthResponse, AuthResult, AuthorizerWorkflow, DeviceAuthManager,
     NewDeviceWorkflow, PairingSession, create_auth_response,
 };
+
+// ============================================================================
+// CRDT Operations
+// ============================================================================
+
+pub use crdt::{HybridLogicalClock, local_apply, merge};
+
+// ============================================================================
+// Tests
+// ============================================================================
 
 #[cfg(test)]
 mod tests {

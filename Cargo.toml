@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2024"
 authors = ["FocusSuite Contributors"]
 license = "MIT OR Apache-2.0"
-description = "Cross-platform Rust library for database operations, business logic, and P2P synchronization in the FocusSuite productivity ecosystem"
+description = "Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture"
 repository = "https://github.com/kodfikirsanat/focussuite"
 homepage = "https://github.com/kodfikirsanat/focussuite"
 documentation = "https://docs.rs/nexus-core"
 readme = "README.md"
-keywords = ["database", "sync", "p2p", "sqlite", "productivity"]
-categories = ["database", "network-programming", "authentication"]
+keywords = ["database", "sync", "p2p", "crdt", "libp2p"]
+categories = ["database", "network-programming", "authentication", "data-structures"]
 exclude = [
     "target/",
     ".git/",

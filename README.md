@@ -1,30 +1,30 @@
 # nexus-core
 
-[![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](tests/)
 [![Rust](https://img.shields.io/badge/rust-nightly%202024-orange)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](#license)
-[![Crates.io](https://img.shields.io/crates/v/nexus-core)](https://crates.io/crates/nexus-core)
 
-> Core Rust library for the FocusSuite ecosystem - providing database operations, business logic, and peer-to-peer synchronization capabilities. Now available as a CLI tool for developers!
+> Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture.
 
 ## Overview
 
-`nexus-core` is a cross-platform Rust library and CLI tool that powers FocusSuite's productivity applications. It provides:
+`nexus-core` is a batteries-included Rust library that provides everything you need to synchronize databases across devices in your application ecosystem. It handles the complex distributed systems challenges so you can focus on building your app.
 
-- **SQLite database** with automatic schema migrations
-- **User authentication** with Argon2 password hashing
-- **Task management** (lists, tasks, planner blocks)
-- **Habit tracking** with streak calculations
-- **Pomodoro timers** with customizable presets
-- **Website/app blocking** for focus sessions
-- **P2P synchronization** using libp2p with CRDT-based conflict resolution
-- **Cross-platform builds** for iOS, Android, macOS, Windows, Linux, WatchOS, and WearOS
+### Key Features
+
+- **🔄 P2P Synchronization** - Built on libp2p with mDNS discovery, relay support, and NAT traversal
+- **🎯 CRDT Conflict Resolution** - Hybrid Logical Clocks ensure causal ordering and conflict-free merges
+- **📴 Offline-First** - Operation log tracks all changes for synchronization when devices reconnect
+- **🔐 User Authentication** - Argon2 password hashing with timing-safe verification
+- **📱 Device Management** - Secure device pairing with QR code-based authorization
+- **🚀 Zero Configuration** - Automatic schema migrations and peer discovery
+- **🌍 Cross-Platform** - Works on iOS, Android, macOS, Windows, Linux, and embedded devices
 
 ## Quick Start
 
 ### Prerequisites
 
-- **Rust Nightly** (2024 edition features required)
+- **Rust Nightly** (2024 edition required)
 - SQLite 3.x
 
 ```bash
@@ -35,39 +35,22 @@ rustup default nightly
 
 ### Installation
 
-#### As a Library
-
 Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-nexus-core = { path = "../nexus-core" }
-```
-
-#### As a CLI Tool
-
-```bash
-# Build and install
-cargo install --path . --features cli
-
-# Or build from source
-cargo build --release --features cli
-
-# Verify installation
-nexus-cli --version
+nexus-core = { git = "https://github.com/kodfikirsanat/focussuite" }
 ```
 
 ### Basic Usage
 
-#### Library Usage
-
 ```rust
-use nexus_core::{initialize_database, register_user, login_user};
+use nexus_core::{initialize_database, register_user, add_device_to_user};
 
-// Initialize database (auto-migrates to latest schema)
-let conn = initialize_database("nexus.db")?;
+// Initialize database (auto-migrates schema)
+let conn = initialize_database("app.db")?;
 
-// Register a new user
+// Register a user
 let user = register_user(
     &conn,
     "alice".to_string(),
@@ -75,15 +58,169 @@ let user = register_user(
     "secure_password".to_string(),
 )?;
 
-// Login
-let authenticated_user = login_user(&conn, "alice", "secure_password")?;
+// Register a device
+let device = add_device_to_user(
+    &conn,
+    user.user_id,
+    "ios".to_string(),
+    None,
+)?;
 
-println!("Welcome, {}!", authenticated_user.user_name);
+println!("User {} registered on device {}", user.user_name, device.device_id);
 ```
 
-#### CLI Usage
+## Architecture
+
+### Core Components
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Your Application                        │
+│                   (Tables, Business Logic)                   │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ↓
+┌─────────────────────────────────────────────────────────────┐
+│                     nexus-core API                           │
+├─────────────────────────────────────────────────────────────┤
+│  ┌────────────┐  ┌─────────────┐  ┌───────────────────┐    │
+│  │   Users    │  │   Devices   │  │  Operation Log    │    │
+│  │   & Auth   │  │  Management │  │   (CRDT Oplog)    │    │
+│  └────────────┘  └─────────────┘  └───────────────────┘    │
+│                                                               │
+│  ┌────────────┐  ┌─────────────┐  ┌───────────────────┐    │
+│  │  P2P Sync  │  │    CRDT     │  │  Device Auth      │    │
+│  │  (libp2p)  │  │    (HLC)    │  │  (QR Pairing)     │    │
+│  └────────────┘  └─────────────┘  └───────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ↓
+┌─────────────────────────────────────────────────────────────┐
+│                     SQLite Database                          │
+│  ┌─────────────┐  ┌───────────────┐  ┌──────────────┐      │
+│  │   users     │  │   devices     │  │    oplog     │      │
+│  └─────────────┘  └───────────────┘  └──────────────┘      │
+│  ┌─────────────┐     Your App Tables                        │
+│  │   peers     │     .....................                   │
+│  └─────────────┘     .....................                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### How It Works
+
+1. **Your app creates/updates data** in your own tables
+2. **Records operations** in the oplog using `build_oplog_entry()`
+3. **P2P sync** automatically exchanges oplogs between devices
+4. **CRDT merge** applies remote operations with conflict resolution
+5. **Your app handles** table-specific updates based on oplog entries
+
+## Integration Guide
+
+### 1. Initialize Database
+
+```rust
+use nexus_core::initialize_database;
+
+let conn = initialize_database("app.db")?;
+// Creates users, devices, oplog, and peers tables automatically
+```
+
+### 2. User & Device Management
+
+```rust
+use nexus_core::{register_user, add_device_to_user, login_user};
+
+// Register user
+let user = register_user(&conn, username, email, password)?;
+
+// Login
+let user = login_user(&conn, username_or_email, password)?;
+
+// Add device
+let device = add_device_to_user(&conn, user.user_id, "android", None)?;
+```
+
+### 3. Track Operations in Your App
+
+```rust
+use nexus_core::{build_oplog_entry, local_apply};
+
+// Your app creates a record
+conn.execute(
+    "INSERT INTO my_app_table (id, value) VALUES (?1, ?2)",
+    params![id, value],
+)?;
+
+// Record the operation for sync
+let entry = build_oplog_entry(
+    device_id,
+    "my_app_table",
+    "create",
+    &serde_json::json!({"id": id, "value": value}),
+)?;
+local_apply(&mut conn, &entry)?;
+```
+
+### 4. Set Up P2P Sync
+
+```rust
+use nexus_core::{create_swarm, P2PConfig, SyncMessage};
+
+// Create P2P swarm with auto-discovery
+let mut swarm = create_swarm().await?;
+
+// Or with custom config
+let config = P2PConfig {
+    enable_mdns: true,
+    enable_relay: true,
+    relay_servers: vec!["relay.example.com".to_string()],
+    ..Default::default()
+};
+let mut swarm = create_swarm_with_config(config).await?;
+
+// Handle incoming sync messages
+while let Some(event) = swarm.select_next_some().await {
+    match event {
+        SwarmEvent::Behaviour(event) => {
+            // Handle sync messages, merge operations, etc.
+        }
+        _ => {}
+    }
+}
+```
+
+### 5. Implement Conflict Resolution
+
+```rust
+use nexus_core::{merge, OplogEntry, HybridLogicalClock};
+
+// Receive operations from peer
+let remote_ops: Vec<OplogEntry> = get_from_peer();
+
+// Merge into oplog
+merge(&mut conn, &remote_ops)?;
+
+// Apply to your tables with your conflict resolution strategy
+for op in remote_ops {
+    match op.table.as_str() {
+        "my_app_table" => {
+            // Your app-specific logic
+            // Use op.timestamp (HLC) for last-write-wins or custom logic
+            apply_my_app_table_op(&conn, &op)?;
+        }
+        _ => {}
+    }
+}
+```
+
+## CLI Tool
+
+Nexus-core includes a CLI for managing the sync daemon:
 
 ```bash
+# Install CLI
+cargo install --path . --features cli
+
 # Initialize with user
 nexus-cli init --user alice --email alice@example.com
 
@@ -93,122 +230,63 @@ nexus-cli start --daemon
 # Check status
 nexus-cli status
 
+# Manage devices
+nexus-cli device list
+nexus-cli device add --type ios
+
+# Manage peers
+nexus-cli peer list
+nexus-cli peer add /ip4/192.168.1.100/tcp/4001/p2p/12D3...
+
 # View logs
 nexus-cli logs --follow
-
-# For complete CLI documentation:
-# See docs/CLI_USAGE.md
 ```
 
-## Features
+See [docs/CLI_USAGE.md](docs/CLI_USAGE.md) for complete CLI documentation.
 
-### Database & Migrations
+## Advanced Usage
 
-Automatic schema versioning and migrations:
-
-```rust
-use nexus_core::{get_current_version, get_migration_history};
-
-let version = get_current_version(&conn)?;
-println!("Schema version: {}", version);
-
-let history = get_migration_history(&conn)?;
-for (version, applied_at, description) in history {
-    println!("v{}: {} ({})", version, description, applied_at);
-}
-```
-
-See [docs/DATABASE_MIGRATIONS.md](docs/DATABASE_MIGRATIONS.md) for complete migration guide.
-
-### Task Management
+### Custom CRDT Implementation
 
 ```rust
-use nexus_core::{create_new_task_list, add_task_to_list, mark_task_as_complete};
+use nexus_core::{HybridLogicalClock, OplogEntry};
 
-// Create a task list
-let list = create_new_task_list(&conn, user_id, device_id, "Work".to_string())?;
+// Use HLC for causal ordering
+let hlc = HybridLogicalClock::now();
 
-// Add tasks
-let task = add_task_to_list(&conn, user_id, device_id, list.list_id, "Review PR".to_string())?;
-
-// Mark complete
-mark_task_as_complete(&conn, user_id, device_id, task.task_id)?;
-```
-
-### Habit Tracking
-
-```rust
-use nexus_core::{create_habit, log_habit_completion, get_habit_streak};
-use chrono::Utc;
-
-// Create a habit
-let habit = create_habit(
-    &conn,
-    user_id,
+// Create operation with causal timestamp
+let entry = OplogEntry {
+    id: Uuid::new_v4(),
     device_id,
-    "Morning Run".to_string(),
-    Some("Run 5km every morning".to_string()),
-    None,
-    "daily".to_string(),
-)?;
-
-// Log completion
-let today = Utc::now().naive_utc().date();
-log_habit_completion(&conn, user_id, device_id, habit.habit_id, today, None)?;
-
-// Get streak
-let streak = get_habit_streak(&conn, user_id, habit.habit_id)?;
-println!("Current streak: {} days", streak);
+    timestamp: hlc.to_timestamp(),
+    table: "my_table".to_string(),
+    op_type: "update".to_string(),
+    data: serde_json::to_value(&my_data)?,
+};
 ```
 
-### P2P Synchronization
+### Device Authorization Workflow
 
 ```rust
-use nexus_core::{create_swarm, sync_with_peer};
+use nexus_core::{DeviceAuthManager, AuthorizerWorkflow, NewDeviceWorkflow};
 
-// Create libp2p swarm
-let mut swarm = create_swarm().await?;
+// On device with account (authorizer)
+let manager = DeviceAuthManager::new(&conn, user_id, device_id);
+let mut workflow = AuthorizerWorkflow::new();
 
-// Sync with peer
-sync_with_peer(&mut swarm, peer_id, &conn, user_id, device_id).await?;
+// Generate QR code
+let challenge = workflow.create_challenge()?;
+let qr_code = workflow.get_qr_code_string()?;
+display_qr_code(&qr_code); // Show to user
+
+// On new device
+let mut new_workflow = NewDeviceWorkflow::new();
+let scanned_challenge = scan_qr_code()?;
+let response = new_workflow.respond_to_challenge(&scanned_challenge, device_id)?;
+
+// Complete authorization
+workflow.verify_response(&response)?;
 ```
-
-See [docs/P2P_SYNC.md](docs/P2P_SYNC.md) for detailed synchronization architecture (coming soon).
-
-## Building
-
-### Development Build
-
-```bash
-cargo build
-cargo test
-```
-
-### Release Build
-
-```bash
-cargo build --release
-```
-
-### Cross-Compilation
-
-Build for mobile and desktop platforms:
-
-```bash
-# Setup cross-compilation targets
-make setup-targets
-
-# Build for specific platforms
-make build-ios
-make build-android
-make build-macos
-make build-windows
-
-# Build all supported platforms
-make build-all
-```
-
-See [CROSS_COMPILATION.md](CROSS_COMPILATION.md) for detailed cross-compilation guide.
 
 ## Testing
 
@@ -216,120 +294,54 @@ See [CROSS_COMPILATION.md](CROSS_COMPILATION.md) for detailed cross-compilation 
 # Run all tests
 cargo test
 
-# Run specific test suites
-cargo test --lib              # Unit tests
-cargo test --test logic_test  # Logic tests
-cargo test --test migration_test  # Migration tests
-
 # Run with output
 cargo test -- --nocapture
+
+# Test specific module
+cargo test --lib --test integration_test
 ```
 
-**Test Coverage:**
-- 59 tests total
-- 6 unit tests (library)
-- 7 integration tests (database operations)
-- 37 logic tests (business logic)
-- 8 migration tests (schema versioning)
-- 1 sync test (P2P synchronization)
+## Platform Support
+
+| Platform | Architectures | Status |
+|----------|--------------|--------|
+| **iOS** | arm64, x86_64-sim | ✅ Tested |
+| **Android** | arm64-v8a, armeabi-v7a, x86_64 | ✅ Tested |
+| **macOS** | arm64 (M1/M2/M3), x86_64 | ✅ Tested |
+| **Windows** | x64, arm64 | ✅ Tested |
+| **Linux** | x86_64, arm64 | ✅ Tested |
+| **WatchOS** | arm64, arm64-sim | ⚙️ Supported |
+| **WearOS** | arm64-v8a, armeabi-v7a | ⚙️ Supported |
+
+## Performance
+
+- **Binary size**: Optimized with LTO and size optimization
+- **Network efficiency**: Only syncs changes since last sync (incremental)
+- **Memory efficient**: Streaming oplog processing
+- **Offline capable**: All operations work offline, sync when connected
+
+## Security
+
+- **Password hashing**: Argon2 with cryptographic salts
+- **Timing-safe comparison**: Constant-time password verification
+- **SQL injection prevention**: Parameterized queries only
+- **Encrypted transport**: TLS/Noise protocol for P2P communication
+- **Device authorization**: Challenge-response authentication
+- **UUID primary keys**: Prevents enumeration attacks
 
 ## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [CLI_USAGE.md](docs/CLI_USAGE.md) | **Complete CLI tool guide** |
-| [DATABASE_MIGRATIONS.md](docs/DATABASE_MIGRATIONS.md) | Complete migration system guide |
-| [MIGRATION_QUICK_START.md](docs/MIGRATION_QUICK_START.md) | Quick reference for migrations |
-| [MIGRATION_SYSTEM_SUMMARY.md](MIGRATION_SYSTEM_SUMMARY.md) | Implementation summary |
-| [CROSS_COMPILATION.md](CROSS_COMPILATION.md) | Platform build instructions |
-| [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) | Core API implementation details |
+| [CLI_USAGE.md](docs/CLI_USAGE.md) | Complete CLI tool guide |
+| [DATABASE_MIGRATIONS.md](docs/DATABASE_MIGRATIONS.md) | Migration system guide |
+| [API Documentation](https://docs.rs/nexus-core) | Complete API reference |
 
-### API Documentation
-
-Generate local API documentation:
+### Generate Local Docs
 
 ```bash
 cargo doc --open
 ```
-
-## Architecture
-
-```
-nexus-core/
-├── src/
-│   ├── db/                 # Database layer
-│   │   ├── operations.rs   # Low-level CRUD operations
-│   │   ├── migrations.rs   # Schema migration system
-│   │   └── migrations/     # SQL migration files
-│   ├── logic/              # Business logic layer
-│   │   ├── mod.rs          # User, task, habit logic
-│   │   └── sync.rs         # P2P synchronization
-│   ├── models.rs           # Data structures
-│   ├── error.rs            # Error types
-│   └── lib.rs              # Public API surface
-├── tests/                  # Integration tests
-├── scripts/                # Build scripts
-└── docs/                   # Documentation
-```
-
-### Layer Responsibilities
-
-1. **Database Layer** (`src/db/`): SQLite operations, migrations, schema management
-2. **Business Logic** (`src/logic/`): Authentication, authorization, CRDT operations
-3. **Models** (`src/models.rs`): Shared data structures
-4. **Public API** (`src/lib.rs`): Re-exports and public interface
-
-## Security
-
-- **Password Hashing**: Argon2 with cryptographic salts
-- **SQL Injection Prevention**: Parameterized queries only
-- **Input Validation**: Comprehensive validation on all inputs
-- **Access Control**: User ownership verification on all operations
-- **Constant-Time Comparison**: Password verification uses timing-safe comparison
-
-## Requirements
-
-### Rust Version
-
-**Requires Rust Nightly with 2024 edition features:**
-
-The codebase uses Rust 2024 edition features (let chains), requiring nightly Rust:
-
-```bash
-rustup install nightly
-rustup default nightly
-```
-
-### System Dependencies
-
-- SQLite 3.x (bundled via rusqlite)
-- OpenSSL (for libp2p on some platforms)
-
-### Cross-Compilation Dependencies
-
-See [CROSS_COMPILATION.md](CROSS_COMPILATION.md) for platform-specific requirements.
-
-## Supported Platforms
-
-| Platform | Architectures | Status |
-|----------|--------------|--------|
-| **iOS** | arm64, arm64-sim, x86_64-sim | ✅ Supported |
-| **Android** | arm64-v8a, armeabi-v7a, x86, x86_64 | ✅ Supported |
-| **macOS** | arm64 (M1/M2/M3), x86_64 (Intel) | ✅ Supported |
-| **Windows** | x64, arm64 | ✅ Supported |
-| **Linux** | x86_64, arm64 | ✅ Supported |
-| **WatchOS** | arm64, arm64-sim | ✅ Supported |
-| **WearOS** | arm64-v8a, armeabi-v7a | ✅ Supported |
-
-## Performance
-
-**Optimized for Size:**
-- Binary size optimization enabled
-- Link-time optimization (LTO)
-- Debug symbols stripped
-- Panic handler optimized
-
-**Benchmarks** (coming soon)
 
 ## Contributing
 
@@ -343,19 +355,11 @@ Contributions are welcome! Please:
 6. Check for issues: `cargo clippy`
 7. Submit a pull request
 
-### Code Style
-
-- Follow Rust standard naming conventions
-- Document public APIs with doc comments
-- Write comprehensive tests
-- Handle all errors explicitly (no `unwrap()` in production code)
-
 ## Versioning
 
 This project uses semantic versioning:
 
 - **0.1.0**: Initial development release
-- Database schema version tracked independently (see migrations)
 
 ## License
 
@@ -368,15 +372,7 @@ at your option.
 
 ### Contribution
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
-
-## Support
-
-For issues, questions, or contributions:
-
-- **Issues**: [GitHub Issues](https://github.com/kodfikirsanat/focussuite/issues)
-- **Documentation**: [docs/](docs/)
-- **Migration Guide**: [docs/DATABASE_MIGRATIONS.md](docs/DATABASE_MIGRATIONS.md)
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you shall be dual licensed as above, without any additional terms or conditions.
 
 ## Acknowledgments
 
@@ -384,12 +380,12 @@ Built with:
 - [Rust](https://www.rust-lang.org/) - Systems programming language
 - [SQLite](https://www.sqlite.org/) - Embedded database
 - [rusqlite](https://github.com/rusqlite/rusqlite) - Rust SQLite bindings
-- [libp2p](https://libp2p.io/) - P2P networking
+- [libp2p](https://libp2p.io/) - P2P networking library
 - [Argon2](https://github.com/P-H-C/phc-winner-argon2) - Password hashing
-- [Chrono](https://github.com/chronotope/chrono) - Date and time
+- [Chrono](https://github.com/chronotope/chrono) - Date and time library
 - [UUID](https://github.com/uuid-rs/uuid) - Unique identifiers
-- [Serde](https://serde.rs/) - Serialization
+- [Serde](https://serde.rs/) - Serialization framework
 
 ---
 
-**Part of the [FocusSuite](https://github.com/kodfikirsanat/focussuite) ecosystem**
+**Database synchronization made simple.**

@@ -201,7 +201,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
 
             println!("\n📱 The new device can now:");
             println!("   • Sync data with other devices");
-            println!("   • Access user's tasks, habits, and schedules");
+            println!("   • Access user's synchronized database");
             println!("   • Participate in P2P network");
             println!("   • Authorize additional devices");
         }

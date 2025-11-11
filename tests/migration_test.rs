@@ -1,7 +1,15 @@
+//! Migration system tests for nexus-core.
+//!
+//! These tests verify:
+//! - Fresh database initialization
+//! - Migration application and version tracking
+//! - Schema correctness
+//! - Data preservation across migrations
+
 use chrono::Utc;
 use nexus_core::db::migrations::{apply_migrations, get_current_version, get_migration_history};
-use nexus_core::db::operations::{create_task, create_task_list, create_user, get_task, get_user};
-use nexus_core::models::{Task, TaskList, User};
+use nexus_core::db::operations::{create_user, get_user};
+use nexus_core::models::User;
 use rusqlite::Connection;
 use uuid::Uuid;
 
@@ -17,7 +25,7 @@ fn test_fresh_database_migration() {
     let version = get_current_version(&conn).unwrap();
     assert_eq!(version, 1, "Fresh database should be at version 1");
 
-    // Verify all tables exist by checking sqlite_master
+    // Verify core tables exist by checking sqlite_master
     let table_count: i32 = conn
         .query_row(
             "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
@@ -26,10 +34,8 @@ fn test_fresh_database_migration() {
         )
         .unwrap();
 
-    // We should have: users, devices, task_lists, tasks, blocks, task_blocks,
-    // blocked_items, sounds, favorite_sounds, habits, habit_entries, pomodoros,
-    // oplog, peers, schema_version = 15 tables
-    assert_eq!(table_count, 15, "Should have 15 tables in initial schema");
+    // We should have: users, devices, oplog, peers, schema_version = 5 tables
+    assert_eq!(table_count, 5, "Should have 5 tables in core sync schema");
 }
 
 #[test]
@@ -38,7 +44,7 @@ fn test_migration_creates_functional_database() {
     let conn = Connection::open_in_memory().unwrap();
     apply_migrations(&conn).unwrap();
 
-    // Create a user
+    // Create a user to verify database is functional
     let user = User {
         user_id: Uuid::new_v4(),
         user_name: "testuser".to_string(),
@@ -49,122 +55,81 @@ fn test_migration_creates_functional_database() {
     create_user(&conn, &user).unwrap();
 
     // Verify user can be retrieved
-    let retrieved_user = get_user(&conn, user.user_id).unwrap();
-    assert!(retrieved_user.is_some());
-    assert_eq!(retrieved_user.unwrap().user_name, "testuser");
-
-    // Create a task list
-    let task_list = TaskList {
-        list_id: Uuid::new_v4(),
-        user_id: user.user_id,
-        name: "My Tasks".to_string(),
-    };
-    create_task_list(&conn, &task_list).unwrap();
-
-    // Create a task
-    let task = Task {
-        task_id: Uuid::new_v4(),
-        list_id: task_list.list_id,
-        content: "Test task".to_string(),
-        is_completed: false,
-        due_date: None,
-        created_at: Utc::now(),
-        updated_at: Some(Utc::now()),
-    };
-    create_task(&conn, &task).unwrap();
-
-    // Verify task can be retrieved
-    let retrieved_task = get_task(&conn, task.task_id).unwrap();
-    assert!(retrieved_task.is_some());
-    assert_eq!(retrieved_task.unwrap().content, "Test task");
+    let retrieved = get_user(&conn, user.user_id).unwrap();
+    assert!(retrieved.is_some());
+    assert_eq!(retrieved.unwrap().user_name, "testuser");
 }
 
 #[test]
 fn test_idempotent_migrations() {
-    // Test that running migrations multiple times doesn't cause errors
+    // Test that running migrations multiple times is safe
     let conn = Connection::open_in_memory().unwrap();
 
     // Apply migrations first time
     apply_migrations(&conn).unwrap();
     let version1 = get_current_version(&conn).unwrap();
 
-    // Apply migrations second time (should be no-op)
+    // Apply migrations again (should be a no-op)
     apply_migrations(&conn).unwrap();
     let version2 = get_current_version(&conn).unwrap();
 
     assert_eq!(
         version1, version2,
-        "Version should not change on re-application"
+        "Version should not change on re-applying migrations"
     );
 
-    // Verify migration history doesn't have duplicates
-    let history = get_migration_history(&conn).unwrap();
-    let mut versions: Vec<i32> = history.iter().map(|(v, _, _)| *v).collect();
-    versions.sort();
-    versions.dedup();
-
-    assert_eq!(
-        history.len(),
-        versions.len(),
-        "Should not have duplicate migration entries"
-    );
+    // Verify no duplicate data or errors
+    let table_count: i32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
+            [],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_eq!(table_count, 5);
 }
 
 #[test]
 fn test_migration_history_tracking() {
-    // Test that migration history is properly tracked
+    // Test that migration history is correctly tracked
     let conn = Connection::open_in_memory().unwrap();
-
-    // Initially should have no history
-    let history_before = get_migration_history(&conn).unwrap();
-    assert_eq!(
-        history_before.len(),
-        0,
-        "Fresh database should have no migration history"
-    );
-
-    // Apply migrations
     apply_migrations(&conn).unwrap();
 
-    // Check history
     let history = get_migration_history(&conn).unwrap();
+
+    // Verify history entries exist
     assert!(
-        history.len() > 0,
-        "Should have migration history after applying migrations"
+        !history.is_empty(),
+        "Migration history should not be empty"
     );
 
-    // Verify history contains expected information
-    for (version, applied_at, description) in &history {
-        assert!(*version > 0, "Version should be positive");
-        assert!(
-            !applied_at.is_empty(),
-            "Applied timestamp should not be empty"
-        );
-        assert!(!description.is_empty(), "Description should not be empty");
-    }
+    // Verify first migration
+    let (version, _timestamp, description) = &history[0];
+    assert_eq!(*version, 1);
+    assert!(description.contains("Initial") || description.contains("schema"));
 
-    // Verify history is in order
-    let mut prev_version = 0;
-    for (version, _, _) in &history {
+    // Verify migrations are in order
+    for i in 0..history.len() - 1 {
         assert!(
-            *version > prev_version,
-            "Migration history should be in ascending order"
+            history[i].0 < history[i + 1].0,
+            "Migration versions should be ordered"
         );
-        prev_version = *version;
     }
 }
 
 #[test]
 fn test_schema_version_table_structure() {
-    // Test that schema_version table has correct structure
+    // Test the schema_version table has correct columns
     let conn = Connection::open_in_memory().unwrap();
     apply_migrations(&conn).unwrap();
 
-    // Query table info
-    let mut stmt = conn.prepare("PRAGMA table_info(schema_version)").unwrap();
+    // Query the table structure
+    let mut stmt = conn
+        .prepare("PRAGMA table_info(schema_version)")
+        .unwrap();
 
     let columns: Vec<String> = stmt
-        .query_map([], |row| row.get::<_, String>(1))
+        .query_map([], |row| row.get(1))
         .unwrap()
         .map(|r| r.unwrap())
         .collect();
@@ -176,7 +141,7 @@ fn test_schema_version_table_structure() {
 
 #[test]
 fn test_foreign_key_constraints() {
-    // Test that foreign key constraints are enforced
+    // Test that foreign key constraints are properly set up
     let conn = Connection::open_in_memory().unwrap();
 
     // Enable foreign keys
@@ -184,46 +149,46 @@ fn test_foreign_key_constraints() {
 
     apply_migrations(&conn).unwrap();
 
-    // Try to create a task list for a non-existent user
-    let task_list = TaskList {
-        list_id: Uuid::new_v4(),
-        user_id: Uuid::new_v4(), // Non-existent user
-        name: "Test List".to_string(),
+    // Create a user
+    let user_id = Uuid::new_v4();
+    let user = User {
+        user_id,
+        user_name: "fktest".to_string(),
+        user_password_hash: "hash".to_string(),
+        user_mail: "fk@example.com".to_string(),
+        created_at: Utc::now(),
     };
+    create_user(&conn, &user).unwrap();
 
-    let result = create_task_list(&conn, &task_list);
+    // Try to insert device with invalid user_id (should fail)
+    let invalid_user_id = Uuid::new_v4();
+    let result = conn.execute(
+        "INSERT INTO devices (device_id, user_id, device_type) VALUES (?1, ?2, ?3)",
+        [
+            invalid_user_id.to_string(),
+            invalid_user_id.to_string(),
+            "test".to_string(),
+        ],
+    );
 
-    // This should fail due to foreign key constraint
-    // Note: SQLite's foreign key enforcement behavior depends on PRAGMA settings
-    // In tests, we're just verifying the schema is correct
     assert!(
-        result.is_err() || result.is_ok(),
-        "Foreign key constraint should be defined (enforcement depends on PRAGMA)"
+        result.is_err(),
+        "Should fail to insert device with nonexistent user_id"
     );
 }
 
 #[test]
-fn test_all_required_tables_exist() {
-    // Test that all required tables from the schema are created
+fn test_all_required_core_tables_exist() {
+    // Test that all required core sync tables are created
     let conn = Connection::open_in_memory().unwrap();
     apply_migrations(&conn).unwrap();
 
     let required_tables = vec![
-        "users",
-        "devices",
-        "task_lists",
-        "tasks",
-        "blocks",
-        "task_blocks",
-        "blocked_items",
-        "sounds",
-        "favorite_sounds",
-        "habits",
-        "habit_entries",
-        "pomodoros",
-        "oplog",
-        "peers",
-        "schema_version",
+        "users",           // User authentication
+        "devices",         // Device management
+        "oplog",          // CRDT operation log
+        "peers",          // P2P peer tracking
+        "schema_version", // Migration tracking
     ];
 
     for table in required_tables {
@@ -235,19 +200,19 @@ fn test_all_required_tables_exist() {
             )
             .unwrap();
 
-        assert_eq!(count, 1, "Table '{}' should exist", table);
+        assert_eq!(count, 1, "Core table '{}' should exist", table);
     }
 }
 
 #[test]
 fn test_database_upgrade_preserves_data() {
-    // Simulate upgrading a database: create data, apply "new" migrations, verify data intact
+    // Simulate upgrading a database: create data, apply migrations again, verify data intact
     let conn = Connection::open_in_memory().unwrap();
 
     // Apply initial migrations
     apply_migrations(&conn).unwrap();
 
-    // Create some test data
+    // Create test data
     let user = User {
         user_id: Uuid::new_v4(),
         user_name: "upgradetest".to_string(),
@@ -257,18 +222,74 @@ fn test_database_upgrade_preserves_data() {
     };
     create_user(&conn, &user).unwrap();
 
-    let task_list = TaskList {
-        list_id: Uuid::new_v4(),
-        user_id: user.user_id,
-        name: "Pre-upgrade List".to_string(),
-    };
-    create_task_list(&conn, &task_list).unwrap();
+    // Create a device
+    conn.execute(
+        "INSERT INTO devices (device_id, user_id, device_type) VALUES (?1, ?2, ?3)",
+        [
+            Uuid::new_v4().to_string(),
+            user.user_id.to_string(),
+            "test_device".to_string(),
+        ],
+    )
+    .unwrap();
 
-    // "Simulate" a restart/upgrade by re-applying migrations
+    // "Simulate" a restart/upgrade by re-applying migrations (should be idempotent)
     apply_migrations(&conn).unwrap();
 
     // Verify data is still intact
     let retrieved_user = get_user(&conn, user.user_id).unwrap();
     assert!(retrieved_user.is_some());
     assert_eq!(retrieved_user.unwrap().user_name, "upgradetest");
+
+    // Verify device still exists
+    let device_count: i32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM devices WHERE user_id = ?1",
+            [user.user_id.to_string()],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_eq!(device_count, 1, "Device should still exist after upgrade");
+}
+
+#[test]
+fn test_users_table_structure() {
+    // Verify users table has correct columns
+    let conn = Connection::open_in_memory().unwrap();
+    apply_migrations(&conn).unwrap();
+
+    let mut stmt = conn.prepare("PRAGMA table_info(users)").unwrap();
+    let columns: Vec<String> = stmt
+        .query_map([], |row| row.get(1))
+        .unwrap()
+        .map(|r| r.unwrap())
+        .collect();
+
+    assert!(columns.contains(&"user_id".to_string()));
+    assert!(columns.contains(&"user_name".to_string()));
+    assert!(columns.contains(&"user_password".to_string()));
+    assert!(columns.contains(&"user_mail".to_string()));
+    assert!(columns.contains(&"created_at".to_string()));
+}
+
+#[test]
+fn test_oplog_table_structure() {
+    // Verify oplog table has correct columns for CRDT-based sync infrastructure
+    let conn = Connection::open_in_memory().unwrap();
+    apply_migrations(&conn).unwrap();
+
+    let mut stmt = conn.prepare("PRAGMA table_info(oplog)").unwrap();
+    let columns: Vec<String> = stmt
+        .query_map([], |row| row.get(1))
+        .unwrap()
+        .map(|r| r.unwrap())
+        .collect();
+
+    // Verify simplified CRDT oplog columns
+    assert!(columns.contains(&"id".to_string()));
+    assert!(columns.contains(&"device_id".to_string()));
+    assert!(columns.contains(&"timestamp".to_string()));
+    assert!(columns.contains(&"table_name".to_string()));
+    assert!(columns.contains(&"op_type".to_string()));
+    assert!(columns.contains(&"data".to_string()));
 }
