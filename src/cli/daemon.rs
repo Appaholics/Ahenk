@@ -143,7 +143,7 @@ pub fn stop_daemon(pid_file: &Path) -> CliResult<()> {
 /// Start the daemon in the background
 #[cfg(unix)]
 pub fn daemonize(pid_file: &Path) -> CliResult<()> {
-    use daemonize::Daemonize;
+    use daemonize_me::{Daemon, Group, User};
     use std::fs::File;
 
     let log_file = pid_file
@@ -156,15 +156,23 @@ pub fn daemonize(pid_file: &Path) -> CliResult<()> {
     let stderr = File::create(&log_file)
         .map_err(|e| CliError::DaemonError(format!("Failed to create log file: {}", e)))?;
 
-    let daemonize = Daemonize::new()
-        .pid_file(pid_file)
-        .working_directory(std::env::current_dir().unwrap_or_else(|_| PathBuf::from("/")))
+    let daemon = Daemon::new()
+        .pid_file(pid_file, Some(false))
+        .work_dir(std::env::current_dir().unwrap_or_else(|_| PathBuf::from("/")))
         .stdout(stdout)
-        .stderr(stderr);
+        .stderr(stderr)
+        .setup_post_fork_parent_hook(|_parent_pid, _child_pid| {
+            // Parent process hook - can be used for cleanup
+            Ok(())
+        });
 
-    daemonize
+    daemon
         .start()
         .map_err(|e| CliError::DaemonError(format!("Failed to daemonize: {}", e)))?;
+
+    // Write PID to file (daemonize-me may not write it automatically with Some(false))
+    let pid = std::process::id() as i32;
+    write_pid(pid_file, pid)?;
 
     Ok(())
 }

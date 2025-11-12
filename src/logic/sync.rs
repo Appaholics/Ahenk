@@ -15,7 +15,7 @@ use uuid::Uuid;
 #[derive(NetworkBehaviour)]
 pub struct NexusBehaviour {
     /// mDNS for local network peer discovery
-    pub mdns: mdns::async_io::Behaviour,
+    pub mdns: mdns::tokio::Behaviour,
     /// Gossipsub for message propagation
     pub gossipsub: gossipsub::Behaviour,
     /// Relay client for NAT traversal
@@ -147,7 +147,7 @@ pub fn create_swarm(
 
     // Create mDNS behaviour for local network discovery (if enabled)
     let mdns = if config.enable_mdns {
-        mdns::async_io::Behaviour::new(
+        mdns::tokio::Behaviour::new(
             mdns::Config {
                 ttl: Duration::from_secs(60 * 6), // 6 minutes
                 query_interval: Duration::from_secs(60),
@@ -156,7 +156,7 @@ pub fn create_swarm(
             peer_id,
         )?
     } else {
-        mdns::async_io::Behaviour::new(mdns::Config::default(), peer_id)?
+        mdns::tokio::Behaviour::new(mdns::Config::default(), peer_id)?
     };
 
     // Create relay client for NAT traversal
@@ -172,20 +172,20 @@ pub fn create_swarm(
         dcutr,
     };
 
-    // Build the transport using the newer API
-    let tcp_transport = tcp::async_io::Transport::default();
+    // Build the transport using the tokio API
+    let tcp_transport = tcp::tokio::Transport::default();
     let transport = tcp_transport
         .upgrade(upgrade::Version::V1)
         .authenticate(noise::Config::new(&keypair)?)
         .multiplex(yamux::Config::default())
         .boxed();
 
-    // Use the new libp2p 0.53 API with async-std executor
+    // Use the libp2p 0.56 API with tokio executor
     let swarm = Swarm::new(
         transport,
         behaviour,
         peer_id,
-        libp2p::swarm::Config::with_async_std_executor(),
+        libp2p::swarm::Config::with_tokio_executor(),
     );
 
     Ok(swarm)
