@@ -8,7 +8,7 @@
 
 use crate::models::{Device, OplogEntry, Peer, User};
 use chrono::{DateTime, Utc};
-use rusqlite::{Connection, Result, Row, params, types::Type};
+use rusqlite::{params, types::Type, Connection, Result, Row};
 use uuid::Uuid;
 
 /// Initialize the database with migrations

@@ -105,9 +105,9 @@ pub use logic::build_oplog_entry;
 // ============================================================================
 
 pub use logic::sync::{
-    NexusBehaviour, P2PConfig, SyncMessage, connect_to_bootstrap_nodes, connect_to_relay_servers,
-    create_swarm, create_swarm_default, decode_sync_message, encode_sync_message,
-    generate_device_id, handle_sync_message, parse_multiaddr_peer_id, update_peer_info,
+    connect_to_bootstrap_nodes, connect_to_relay_servers, create_swarm, create_swarm_default,
+    decode_sync_message, encode_sync_message, generate_device_id, handle_sync_message,
+    parse_multiaddr_peer_id, update_peer_info, NexusBehaviour, P2PConfig, SyncMessage,
 };
 
 // Sync manager for orchestrating P2P operations
@@ -118,15 +118,15 @@ pub use logic::sync_manager::SyncManager;
 // ============================================================================
 
 pub use auth::{
-    AuthChallenge, AuthResponse, AuthResult, AuthorizerWorkflow, DeviceAuthManager,
-    NewDeviceWorkflow, PairingSession, create_auth_response,
+    create_auth_response, AuthChallenge, AuthResponse, AuthResult, AuthorizerWorkflow,
+    DeviceAuthManager, NewDeviceWorkflow, PairingSession,
 };
 
 // ============================================================================
 // CRDT Operations
 // ============================================================================
 
-pub use crdt::{HybridLogicalClock, local_apply, merge};
+pub use crdt::{local_apply, merge, HybridLogicalClock};
 
 // ============================================================================
 // Tests

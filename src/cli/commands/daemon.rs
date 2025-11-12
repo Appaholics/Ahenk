@@ -3,7 +3,7 @@ use crate::cli::daemon as daemon_utils;
 use crate::cli::errors::{CliError, CliResult};
 use crate::cli::output;
 use crate::db::operations::initialize_database;
-use crate::logic::sync::{P2PConfig, create_swarm};
+use crate::logic::sync::{create_swarm, P2PConfig};
 use crate::logic::sync_manager::SyncManager;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;

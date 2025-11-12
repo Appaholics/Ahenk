@@ -1,12 +1,12 @@
 use crate::logic::sync::{
-    NexusBehaviour, NexusBehaviourEvent, P2PConfig, SyncMessage, connect_to_bootstrap_nodes,
-    connect_to_relay_servers, create_swarm, encode_sync_message,
+    connect_to_bootstrap_nodes, connect_to_relay_servers, create_swarm, encode_sync_message,
+    NexusBehaviour, NexusBehaviourEvent, P2PConfig, SyncMessage,
 };
 use crate::models::OplogEntry;
 use chrono::{DateTime, Utc};
-use libp2p::PeerId;
 use libp2p::swarm::SwarmEvent;
-use libp2p::{Swarm, gossipsub, identity, mdns};
+use libp2p::PeerId;
+use libp2p::{gossipsub, identity, mdns, Swarm};
 use rusqlite::Connection;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
@@ -23,7 +23,7 @@ pub struct SyncManager {
     /// Device ID for this device
     device_id: Uuid,
     /// Database connection (thread-safe)
-    conn: Arc<Mutex<Connection>>,
+    _conn: Arc<Mutex<Connection>>,
     /// Gossipsub topic for sync messages
     topic: gossipsub::IdentTopic,
     /// Is the manager currently actively syncing/connected to peers
@@ -59,7 +59,7 @@ impl SyncManager {
             swarm,
             user_id,
             device_id,
-            conn,
+            _conn: conn,
             topic,
             is_syncing: false,
             last_sync_time: None,
@@ -85,7 +85,7 @@ impl SyncManager {
             swarm,
             user_id,
             device_id,
-            conn,
+            _conn: conn,
             topic,
             is_syncing: false,
             last_sync_time: None,
@@ -128,7 +128,7 @@ impl SyncManager {
             peer_id: peer_id.to_string(),
         };
 
-        let encoded = encode_sync_message(&message).map_err(|e| std::io::Error::other(e))?;
+        let encoded = encode_sync_message(&message).map_err(std::io::Error::other)?;
 
         self.swarm
             .behaviour_mut()
@@ -149,7 +149,7 @@ impl SyncManager {
             since_timestamp: since_timestamp.timestamp(),
         };
 
-        let encoded = encode_sync_message(&message).map_err(|e| std::io::Error::other(e))?;
+        let encoded = encode_sync_message(&message).map_err(std::io::Error::other)?;
 
         self.swarm
             .behaviour_mut()
@@ -170,7 +170,7 @@ impl SyncManager {
             entries,
         };
 
-        let encoded = encode_sync_message(&message).map_err(|e| std::io::Error::other(e))?;
+        let encoded = encode_sync_message(&message).map_err(std::io::Error::other)?;
 
         self.swarm
             .behaviour_mut()
@@ -212,7 +212,7 @@ impl SyncManager {
     #[cfg(not(feature = "tauri-api"))]
     fn emit_sync_status(&self) {
         // No-op when tauri feature is not enabled
-        let _ = (&self.connected_peers);
+        let _ = &self.connected_peers;
     }
 
     #[cfg(feature = "tauri-api")]
@@ -349,12 +349,9 @@ impl SyncManager {
         message: gossipsub::Message,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let sync_message = crate::logic::sync::decode_sync_message(&message.data)?;
-        match sync_message {
-            SyncMessage::SyncData { .. } => {
-                self.last_sync_time = Some(Utc::now());
-                self.emit_sync_status();
-            }
-            _ => {}
+        if let SyncMessage::SyncData { .. } = sync_message {
+            self.last_sync_time = Some(Utc::now());
+            self.emit_sync_status();
         }
         Ok(())
     }

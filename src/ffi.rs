@@ -16,12 +16,12 @@ pub type DbConnection = Connection;
 /// The caller is responsible for calling `nexus_close_database` to free the connection.
 /// The `db_path` must be a valid, null-terminated C string.
 #[unsafe(no_mangle)]
-pub extern "C" fn nexus_initialize_database(db_path: *const c_char) -> *mut DbConnection {
+pub unsafe extern "C" fn nexus_initialize_database(db_path: *const c_char) -> *mut DbConnection {
     if db_path.is_null() {
         return ptr::null_mut();
     }
 
-    let c_str = unsafe { CStr::from_ptr(db_path) };
+    let c_str = CStr::from_ptr(db_path);
     let path = match c_str.to_str() {
         Ok(s) => s,
         Err(_) => return ptr::null_mut(),
@@ -56,22 +56,20 @@ pub unsafe extern "C" fn nexus_close_database(conn_ptr: *mut DbConnection) {
 /// The `username`, `email`, and `password` must be valid, null-terminated C strings.
 /// The caller is responsible for calling `nexus_free_string` on the returned pointer.
 #[unsafe(no_mangle)]
-pub extern "C" fn nexus_register_user(
+pub unsafe extern "C" fn nexus_register_user(
     conn_ptr: *mut DbConnection,
     username: *const c_char,
     email: *const c_char,
     password: *const c_char,
 ) -> *mut c_char {
-    let conn = unsafe {
-        if conn_ptr.is_null() {
-            return ptr::null_mut();
-        }
-        &*conn_ptr
-    };
+    if conn_ptr.is_null() {
+        return ptr::null_mut();
+    }
+    let conn = &*conn_ptr;
 
-    let username = unsafe { CStr::from_ptr(username).to_str().unwrap() };
-    let email = unsafe { CStr::from_ptr(email).to_str().unwrap() };
-    let password = unsafe { CStr::from_ptr(password).to_str().unwrap() };
+    let username = CStr::from_ptr(username).to_str().unwrap();
+    let email = CStr::from_ptr(email).to_str().unwrap();
+    let password = CStr::from_ptr(password).to_str().unwrap();
 
     match crate::logic::register_user(
         conn,
@@ -109,20 +107,18 @@ pub unsafe extern "C" fn nexus_free_string(s_ptr: *mut c_char) {
 /// The `username` and `password` must be valid, null-terminated C strings.
 /// The caller is responsible for calling `nexus_free_string` on the returned pointer.
 #[unsafe(no_mangle)]
-pub extern "C" fn nexus_login_user(
+pub unsafe extern "C" fn nexus_login_user(
     conn_ptr: *mut DbConnection,
     username: *const c_char,
     password: *const c_char,
 ) -> *mut c_char {
-    let conn = unsafe {
-        if conn_ptr.is_null() {
-            return ptr::null_mut();
-        }
-        &*conn_ptr
-    };
+    if conn_ptr.is_null() {
+        return ptr::null_mut();
+    }
+    let conn = &*conn_ptr;
 
-    let username = unsafe { CStr::from_ptr(username).to_str().unwrap() };
-    let password = unsafe { CStr::from_ptr(password).to_str().unwrap() };
+    let username = CStr::from_ptr(username).to_str().unwrap();
+    let password = CStr::from_ptr(password).to_str().unwrap();
 
     match crate::logic::login_user(conn, username, password) {
         Ok(user) => {

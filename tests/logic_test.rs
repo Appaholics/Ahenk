@@ -239,7 +239,7 @@ fn test_generate_device_id() {
 
 #[test]
 fn test_sync_message_encode_decode() {
-    use cfost::logic::sync::{SyncMessage, decode_sync_message, encode_sync_message};
+    use cfost::logic::sync::{decode_sync_message, encode_sync_message, SyncMessage};
 
     let user_id = Uuid::new_v4();
     let device_id = Uuid::new_v4();
