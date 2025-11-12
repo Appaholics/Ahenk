@@ -12,7 +12,7 @@ pub mod sync_manager;
 use crate::crdt;
 use crate::db::operations;
 use crate::models::{Device, OplogEntry, User};
-use argon2::password_hash::{SaltString, rand_core::OsRng};
+use argon2::password_hash::{rand_core::OsRng, SaltString};
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use chrono::Utc;
 use rusqlite::Connection;

@@ -113,7 +113,7 @@ impl HybridLogicalClock {
 
 impl PartialOrd for HybridLogicalClock {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.timestamp.partial_cmp(&other.timestamp)
+        Some(self.cmp(other))
     }
 }
 

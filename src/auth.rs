@@ -5,8 +5,8 @@
 /// from an already authorized device.
 use crate::models::Device;
 use chrono::{DateTime, Duration, Utc};
-use libp2p::PeerId;
 use libp2p::identity::Keypair;
+use libp2p::PeerId;
 use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;

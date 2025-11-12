@@ -4,8 +4,8 @@ use crate::models::{OplogEntry, Peer};
 use chrono::Utc;
 use libp2p::gossipsub::{MessageAuthenticity, ValidationMode};
 use libp2p::{
-    PeerId, Swarm, Transport, core::upgrade, dcutr, gossipsub, identity, mdns, multiaddr::Protocol,
-    noise, relay, swarm::NetworkBehaviour, tcp, yamux,
+    core::upgrade, dcutr, gossipsub, identity, mdns, multiaddr::Protocol, noise, relay,
+    swarm::NetworkBehaviour, tcp, yamux, PeerId, Swarm, Transport,
 };
 use rusqlite::Connection;
 use std::time::Duration;
@@ -275,7 +275,7 @@ pub fn update_peer_info(
     conn: &Connection,
     user_id: Uuid,
     device_id: Uuid,
-    peer_id: String,
+    _peer_id: String,
     ip_address: Option<String>,
 ) -> Result<(), String> {
     // Check if peer exists

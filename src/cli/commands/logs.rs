@@ -4,7 +4,7 @@ use crate::cli::output;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Seek, SeekFrom};
 use std::path::Path;
-use tokio::time::{Duration, sleep};
+use tokio::time::{sleep, Duration};
 
 pub async fn view(
     follow: bool,
