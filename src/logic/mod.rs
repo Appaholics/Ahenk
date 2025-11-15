@@ -1,4 +1,4 @@
-//! Business logic for nexus-core synchronization infrastructure.
+//! Business logic for ahenk synchronization infrastructure.
 //!
 //! This module provides high-level functions for:
 //! - User registration and authentication

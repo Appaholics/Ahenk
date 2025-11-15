@@ -6,7 +6,7 @@ error: failed to run custom build command for `glib-sys v0.18.1`
 note: To improve backtraces for build dependencies, set the CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG=true environment variable to enable debug information generation.
 
 Caused by:
-  process didn't exit successfully: `/home/runner/work/nexus-core/nexus-core/target/debug/build/glib-sys-9feb41a102c3dedf/build-script-build` (exit status: 1)
+  process didn't exit successfully: `/home/runner/work/ahenk/ahenk/target/debug/build/glib-sys-9feb41a102c3dedf/build-script-build` (exit status: 1)
   --- stdout
   cargo:rerun-if-env-changed=GLIB_2.0_NO_PKG_CONFIG
   cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
@@ -44,7 +44,7 @@ error: failed to run custom build command for `glib-sys v0.18.1`
 note: To improve backtraces for build dependencies, set the CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG=true environment variable to enable debug information generation.
 
 Caused by:
-  process didn't exit successfully: `/home/runner/work/nexus-core/nexus-core/target/debug/build/glib-sys-9feb41a102c3dedf/build-script-build` (exit status: 1)
+  process didn't exit successfully: `/home/runner/work/ahenk/ahenk/target/debug/build/glib-sys-9feb41a102c3dedf/build-script-build` (exit status: 1)
   --- stdout
   cargo:rerun-if-env-changed=GLIB_2.0_NO_PKG_CONFIG
   cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
@@ -82,7 +82,7 @@ error: failed to run custom build command for `glib-sys v0.18.1`
 note: To improve backtraces for build dependencies, set the CARGO_PROFILE_TEST_BUILD_OVERRIDE_DEBUG=true environment variable to enable debug information generation.
 
 Caused by:
-  process didn't exit successfully: `/home/runner/work/nexus-core/nexus-core/target/debug/build/glib-sys-d4a34de9dd80cf99/build-script-build` (exit status: 1)
+  process didn't exit successfully: `/home/runner/work/ahenk/ahenk/target/debug/build/glib-sys-d4a34de9dd80cf99/build-script-build` (exit status: 1)
   --- stdout
   cargo:rerun-if-env-changed=GLIB_2.0_NO_PKG_CONFIG
   cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
@@ -144,7 +144,7 @@ ring 0.16.20
 │   ├── libp2p-tls 0.4.1
 │   │   └── libp2p-quic 0.10.3
 │   │       └── libp2p 0.53.2
-│   │           └── cfost 0.1.0
+│   │           └── ahenk 0.1.0
 │   └── libp2p-tls 0.3.0
 │       └── libp2p 0.53.2
 └── libp2p-tls 0.3.0
@@ -161,7 +161,7 @@ async-std 1.13.2
 ├── quinn 0.11.9
 │   └── libp2p-quic 0.10.3
 │       └── libp2p 0.53.2
-│           └── cfost 0.1.0
+│           └── ahenk 0.1.0
 ├── libp2p-swarm 0.44.2
 │   ├── libp2p-upnp 0.2.2
 │   │   └── libp2p 0.53.2
@@ -206,7 +206,7 @@ async-std 1.13.2
 │   └── libp2p 0.53.2
 ├── libp2p-quic 0.10.3
 ├── libp2p-mdns 0.45.1
-├── cfost 0.1.0
+├── ahenk 0.1.0
 └── async-std-resolver 0.24.4
     └── libp2p-dns 0.41.1
         └── libp2p 0.53.2
@@ -224,7 +224,7 @@ atk 0.18.2
     ├── wry 0.53.5
     │   └── tauri-runtime-wry 2.9.1
     │       └── tauri 2.9.2
-    │           └── cfost 0.1.0
+    │           └── ahenk 0.1.0
     ├── webkit2gtk 2.0.1
     │   ├── wry 0.53.5
     │   ├── tauri-runtime-wry 2.9.1
@@ -258,7 +258,7 @@ atk-sys 0.18.2
 │   │   ├── wry 0.53.5
 │   │   │   └── tauri-runtime-wry 2.9.1
 │   │   │       └── tauri 2.9.2
-│   │   │           └── cfost 0.1.0
+│   │   │           └── ahenk 0.1.0
 │   │   └── webkit2gtk 2.0.1
 │   │       ├── wry 0.53.5
 │   │       ├── tauri-runtime-wry 2.9.1
@@ -296,7 +296,7 @@ ID:        RUSTSEC-2025-0069
 URL:       https://rustsec.org/advisories/RUSTSEC-2025-0069
 Dependency tree:
 daemonize 0.5.0
-└── cfost 0.1.0
+└── ahenk 0.1.0
 
 Crate:     fxhash
 Version:   0.2.1
@@ -312,7 +312,7 @@ fxhash 0.2.1
         ├── wry 0.53.5
         │   └── tauri-runtime-wry 2.9.1
         │       └── tauri 2.9.2
-        │           └── cfost 0.1.0
+        │           └── ahenk 0.1.0
         └── tauri-utils 2.8.0
             ├── tauri-runtime-wry 2.9.1
             ├── tauri-runtime 2.9.1
@@ -324,7 +324,7 @@ fxhash 0.2.1
             │   └── tauri-macros 2.5.0
             ├── tauri-build 2.5.1
             │   ├── tauri 2.9.2
-            │   └── cfost 0.1.0
+            │   └── ahenk 0.1.0
             └── tauri 2.9.2
 
 Crate:     gdk
@@ -340,7 +340,7 @@ gdk 0.18.2
 │   ├── wry 0.53.5
 │   │   └── tauri-runtime-wry 2.9.1
 │   │       └── tauri 2.9.2
-│   │           └── cfost 0.1.0
+│   │           └── ahenk 0.1.0
 │   ├── tauri-runtime-wry 2.9.1
 │   ├── tauri-runtime 2.9.1
 │   │   ├── tauri-runtime-wry 2.9.1
@@ -376,7 +376,7 @@ gdk-sys 0.18.2
 │   ├── wry 0.53.5
 │   │   └── tauri-runtime-wry 2.9.1
 │   │       └── tauri 2.9.2
-│   │           └── cfost 0.1.0
+│   │           └── ahenk 0.1.0
 │   └── webkit2gtk 2.0.1
 │       ├── wry 0.53.5
 │       ├── tauri-runtime-wry 2.9.1
@@ -428,7 +428,7 @@ gdkwayland-sys 0.18.2
 └── tao 0.34.5
     └── tauri-runtime-wry 2.9.1
         └── tauri 2.9.2
-            └── cfost 0.1.0
+            └── ahenk 0.1.0
 
 Crate:     gdkx11
 Version:   0.18.2
@@ -442,7 +442,7 @@ gdkx11 0.18.2
 └── wry 0.53.5
     └── tauri-runtime-wry 2.9.1
         └── tauri 2.9.2
-            └── cfost 0.1.0
+            └── ahenk 0.1.0
 
 Crate:     gdkx11-sys
 Version:   0.18.2
@@ -456,7 +456,7 @@ gdkx11-sys 0.18.2
 ├── tao 0.34.5
 │   └── tauri-runtime-wry 2.9.1
 │       └── tauri 2.9.2
-│           └── cfost 0.1.0
+│           └── ahenk 0.1.0
 └── gdkx11 0.18.2
     └── wry 0.53.5
         └── tauri-runtime-wry 2.9.1
@@ -473,7 +473,7 @@ gtk 0.18.2
 ├── wry 0.53.5
 │   └── tauri-runtime-wry 2.9.1
 │       └── tauri 2.9.2
-│           └── cfost 0.1.0
+│           └── ahenk 0.1.0
 ├── webkit2gtk 2.0.1
 │   ├── wry 0.53.5
 │   ├── tauri-runtime-wry 2.9.1
@@ -506,7 +506,7 @@ gtk-sys 0.18.2
 │   ├── wry 0.53.5
 │   │   └── tauri-runtime-wry 2.9.1
 │   │       └── tauri 2.9.2
-│   │           └── cfost 0.1.0
+│   │           └── ahenk 0.1.0
 │   └── webkit2gtk 2.0.1
 │       ├── wry 0.53.5
 │       ├── tauri-runtime-wry 2.9.1
@@ -546,7 +546,7 @@ gtk3-macros 0.18.2
     ├── wry 0.53.5
     │   └── tauri-runtime-wry 2.9.1
     │       └── tauri 2.9.2
-    │           └── cfost 0.1.0
+    │           └── ahenk 0.1.0
     ├── webkit2gtk 2.0.1
     │   ├── wry 0.53.5
     │   ├── tauri-runtime-wry 2.9.1
@@ -578,7 +578,7 @@ instant 0.1.13
 ├── libp2p-swarm 0.44.2
 │   ├── libp2p-upnp 0.2.2
 │   │   └── libp2p 0.53.2
-│   │       └── cfost 0.1.0
+│   │       └── ahenk 0.1.0
 │   ├── libp2p-request-response 0.26.3
 │   │   ├── libp2p-rendezvous 0.14.0
 │   │   │   └── libp2p 0.53.2
@@ -651,7 +651,7 @@ paste 1.0.15
     │   └── if-watch 3.2.1
     │       ├── libp2p-tcp 0.41.0
     │       │   └── libp2p 0.53.2
-    │       │       └── cfost 0.1.0
+    │       │       └── ahenk 0.1.0
     │       ├── libp2p-quic 0.10.3
     │       │   └── libp2p 0.53.2
     │       └── libp2p-mdns 0.45.1
@@ -681,7 +681,7 @@ proc-macro-error 1.0.4
 │       ├── wry 0.53.5
 │       │   └── tauri-runtime-wry 2.9.1
 │       │       └── tauri 2.9.2
-│       │           └── cfost 0.1.0
+│       │           └── ahenk 0.1.0
 │       ├── webkit2gtk 2.0.1
 │       │   ├── wry 0.53.5
 │       │   ├── tauri-runtime-wry 2.9.1
@@ -760,7 +760,7 @@ unic-char-property 0.9.0
         └── tauri-utils 2.8.0
             ├── tauri-runtime-wry 2.9.1
             │   └── tauri 2.9.2
-            │       └── cfost 0.1.0
+            │       └── ahenk 0.1.0
             ├── tauri-runtime 2.9.1
             │   ├── tauri-runtime-wry 2.9.1
             │   └── tauri 2.9.2
@@ -770,7 +770,7 @@ unic-char-property 0.9.0
             │   └── tauri-macros 2.5.0
             ├── tauri-build 2.5.1
             │   ├── tauri 2.9.2
-            │   └── cfost 0.1.0
+            │   └── ahenk 0.1.0
             └── tauri 2.9.2
 
 Crate:     unic-char-range
@@ -787,7 +787,7 @@ unic-char-range 0.9.0
 │       └── tauri-utils 2.8.0
 │           ├── tauri-runtime-wry 2.9.1
 │           │   └── tauri 2.9.2
-│           │       └── cfost 0.1.0
+│           │       └── ahenk 0.1.0
 │           ├── tauri-runtime 2.9.1
 │           │   ├── tauri-runtime-wry 2.9.1
 │           │   └── tauri 2.9.2
@@ -797,7 +797,7 @@ unic-char-range 0.9.0
 │           │   └── tauri-macros 2.5.0
 │           ├── tauri-build 2.5.1
 │           │   ├── tauri 2.9.2
-│           │   └── cfost 0.1.0
+│           │   └── ahenk 0.1.0
 │           └── tauri 2.9.2
 └── unic-char-property 0.9.0
     └── unic-ucd-ident 0.9.0
@@ -817,7 +817,7 @@ unic-common 0.9.0
             └── tauri-utils 2.8.0
                 ├── tauri-runtime-wry 2.9.1
                 │   └── tauri 2.9.2
-                │       └── cfost 0.1.0
+                │       └── ahenk 0.1.0
                 ├── tauri-runtime 2.9.1
                 │   ├── tauri-runtime-wry 2.9.1
                 │   └── tauri 2.9.2
@@ -827,7 +827,7 @@ unic-common 0.9.0
                 │   └── tauri-macros 2.5.0
                 ├── tauri-build 2.5.1
                 │   ├── tauri 2.9.2
-                │   └── cfost 0.1.0
+                │   └── ahenk 0.1.0
                 └── tauri 2.9.2
 
 Crate:     unic-ucd-ident
@@ -843,7 +843,7 @@ unic-ucd-ident 0.9.0
     └── tauri-utils 2.8.0
         ├── tauri-runtime-wry 2.9.1
         │   └── tauri 2.9.2
-        │       └── cfost 0.1.0
+        │       └── ahenk 0.1.0
         ├── tauri-runtime 2.9.1
         │   ├── tauri-runtime-wry 2.9.1
         │   └── tauri 2.9.2
@@ -853,7 +853,7 @@ unic-ucd-ident 0.9.0
         │   └── tauri-macros 2.5.0
         ├── tauri-build 2.5.1
         │   ├── tauri 2.9.2
-        │   └── cfost 0.1.0
+        │   └── ahenk 0.1.0
         └── tauri 2.9.2
 
 Crate:     unic-ucd-version
@@ -870,7 +870,7 @@ unic-ucd-version 0.9.0
         └── tauri-utils 2.8.0
             ├── tauri-runtime-wry 2.9.1
             │   └── tauri 2.9.2
-            │       └── cfost 0.1.0
+            │       └── ahenk 0.1.0
             ├── tauri-runtime 2.9.1
             │   ├── tauri-runtime-wry 2.9.1
             │   └── tauri 2.9.2
@@ -880,7 +880,7 @@ unic-ucd-version 0.9.0
             │   └── tauri-macros 2.5.0
             ├── tauri-build 2.5.1
             │   ├── tauri 2.9.2
-            │   └── cfost 0.1.0
+            │   └── ahenk 0.1.0
             └── tauri 2.9.2
 
 Crate:     glib
@@ -896,7 +896,7 @@ glib 0.18.5
 │   ├── wry 0.53.5
 │   │   └── tauri-runtime-wry 2.9.1
 │   │       └── tauri 2.9.2
-│   │           └── cfost 0.1.0
+│   │           └── ahenk 0.1.0
 │   ├── tauri-runtime-wry 2.9.1
 │   ├── tauri-runtime 2.9.1
 │   │   ├── tauri-runtime-wry 2.9.1
@@ -959,7 +959,7 @@ error: failed to run custom build command for `glib-sys v0.18.1`
 note: To improve backtraces for build dependencies, set the CARGO_PROFILE_TEST_BUILD_OVERRIDE_DEBUG=true environment variable to enable debug information generation.
 
 Caused by:
-  process didn't exit successfully: `/home/runner/work/nexus-core/nexus-core/target/debug/build/glib-sys-25a6fb1fcf3a1a23/build-script-build` (exit status: 1)
+  process didn't exit successfully: `/home/runner/work/ahenk/ahenk/target/debug/build/glib-sys-25a6fb1fcf3a1a23/build-script-build` (exit status: 1)
   --- stdout
   cargo:rerun-if-env-changed=GLIB_2.0_NO_PKG_CONFIG
   cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu
@@ -998,7 +998,7 @@ warning: ring@0.17.14: cc: error: unrecognized command-line option '-mmacosx-ver
 error: failed to run custom build command for `ring v0.17.14`
 
 Caused by:
-  process didn't exit successfully: `/home/runner/work/nexus-core/nexus-core/target/debug/build/ring-01dd99b48d541217/build-script-build` (exit status: 1)
+  process didn't exit successfully: `/home/runner/work/ahenk/ahenk/target/debug/build/ring-01dd99b48d541217/build-script-build` (exit status: 1)
   --- stdout
   cargo:rerun-if-env-changed=CARGO_MANIFEST_DIR
   cargo:rerun-if-env-changed=CARGO_PKG_NAME
@@ -1014,7 +1014,7 @@ Caused by:
   cargo:rerun-if-env-changed=CARGO_CFG_TARGET_ENV
   cargo:rerun-if-env-changed=CARGO_CFG_TARGET_ENDIAN
   OPT_LEVEL = Some(0)
-  OUT_DIR = Some(/home/runner/work/nexus-core/nexus-core/target/aarch64-apple-darwin/debug/build/ring-66ee57531ed8ab40/out)
+  OUT_DIR = Some(/home/runner/work/ahenk/ahenk/target/aarch64-apple-darwin/debug/build/ring-66ee57531ed8ab40/out)
   TARGET = Some(aarch64-apple-darwin)
   CARGO_ENCODED_RUSTFLAGS = Some()
   HOST = Some(x86_64-unknown-linux-gnu)
@@ -1052,7 +1052,7 @@ Caused by:
   --- stderr
 
 
-  error occurred in cc-rs: command did not execute successfully (status code exit status: 1): LC_ALL="C" "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-gdwarf-2" "-fno-omit-frame-pointer" "-arch" "arm64" "-mmacosx-version-min=11.0" "-I" "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ring-0.17.14/include" "-I" "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ring-0.17.14/pregenerated" "-Wall" "-Wextra" "-fvisibility=hidden" "-std=c1x" "-Wall" "-Wbad-function-cast" "-Wcast-align" "-Wcast-qual" "-Wconversion" "-Wmissing-field-initializers" "-Wmissing-include-dirs" "-Wnested-externs" "-Wredundant-decls" "-Wshadow" "-Wsign-compare" "-Wsign-conversion" "-Wstrict-prototypes" "-Wundef" "-Wuninitialized" "-gfull" "-DNDEBUG" "-o" "/home/runner/work/nexus-core/nexus-core/target/aarch64-apple-darwin/debug/build/ring-66ee57531ed8ab40/out/25ac62e5b3c53843-curve25519.o" "-c" "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ring-0.17.14/crypto/curve25519/curve25519.c"
+  error occurred in cc-rs: command did not execute successfully (status code exit status: 1): LC_ALL="C" "cc" "-O0" "-ffunction-sections" "-fdata-sections" "-fPIC" "-gdwarf-2" "-fno-omit-frame-pointer" "-arch" "arm64" "-mmacosx-version-min=11.0" "-I" "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ring-0.17.14/include" "-I" "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ring-0.17.14/pregenerated" "-Wall" "-Wextra" "-fvisibility=hidden" "-std=c1x" "-Wall" "-Wbad-function-cast" "-Wcast-align" "-Wcast-qual" "-Wconversion" "-Wmissing-field-initializers" "-Wmissing-include-dirs" "-Wnested-externs" "-Wredundant-decls" "-Wshadow" "-Wsign-compare" "-Wsign-conversion" "-Wstrict-prototypes" "-Wundef" "-Wuninitialized" "-gfull" "-DNDEBUG" "-o" "/home/runner/work/ahenk/ahenk/target/aarch64-apple-darwin/debug/build/ring-66ee57531ed8ab40/out/25ac62e5b3c53843-curve25519.o" "-c" "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ring-0.17.14/crypto/curve25519/curve25519.c"
 
 
 warning: build failed, waiting for other jobs to finish...

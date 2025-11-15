@@ -1,6 +1,6 @@
 # Database Migrations
 
-This directory contains SQL migration files for the nexus-core database schema.
+This directory contains SQL migration files for the ahenk database schema.
 
 ## Migration Naming Convention
 
@@ -29,7 +29,7 @@ Examples:
    - Use `ALTER TABLE` for modifying existing tables
    - Include comments explaining the migration
 
-4. **Add to migrations.rs**: Update `nexus-core/src/db/migrations.rs` to include the new migration:
+4. **Add to migrations.rs**: Update `ahenk/src/db/migrations.rs` to include the new migration:
    ```rust
    const MIGRATIONS: &[Migration] = &[
        // ... existing migrations ...
@@ -101,7 +101,7 @@ SELECT * FROM schema_version ORDER BY version;
 
 Or use the Rust API:
 ```rust
-use cfost::db::migrations::{get_current_version, get_migration_history};
+use ahenk::db::migrations::{get_current_version, get_migration_history};
 
 let conn = initialize_database("nexus.db")?;
 let current_version = get_current_version(&conn)?;

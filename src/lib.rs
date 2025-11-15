@@ -1,11 +1,11 @@
-//! # CFOST - Conflict-Free Offline Synchronization Tool
+//! # Ahenk - Conflict-Free Offline Synchronization Tool
 //!
 //! Cross-platform database synchronization infrastructure with P2P networking
 //! and CRDT-based conflict resolution.
 //!
 //! ## Overview
 //!
-//! CFOST provides a complete solution for synchronizing databases across devices:
+//! Ahenk provides a complete solution for synchronizing databases across devices:
 //! - **User authentication** with Argon2 password hashing
 //! - **Device management** and authorization
 //! - **P2P networking** using libp2p (mDNS, relay, DCUtR)
@@ -16,7 +16,7 @@
 //! ## Quick Start
 //!
 //! ```rust,no_run
-//! use cfost::{initialize_database, register_user, login_user, add_device_to_user};
+//! use ahenk::{initialize_database, register_user, login_user, add_device_to_user};
 //!
 //! // Initialize database with automatic migrations
 //! let conn = initialize_database("app.db").unwrap();

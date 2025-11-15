@@ -26,7 +26,7 @@ The Nexus CLI is a command-line interface for managing and synchronizing data ac
 ```bash
 # Clone the repository
 git clone https://github.com/kodfikirsanat/focussuite
-cd nexus-core
+cd ahenk
 
 # Build with CLI feature
 cargo build --release --features cli
@@ -35,13 +35,13 @@ cargo build --release --features cli
 cargo install --path . --features cli
 
 # Verify installation
-nexus-cli --version
+ahenk-cli --version
 ```
 
 ### From Cargo
 
 ```bash
-cargo install nexus-cli --features cli
+cargo install ahenk-cli --features cli
 ```
 
 ## Quick Start
@@ -49,7 +49,7 @@ cargo install nexus-cli --features cli
 1. **Initialize the database and create a user:**
 
 ```bash
-nexus-cli init --user alice --email alice@example.com
+ahenk-cli init --user alice --email alice@example.com
 ```
 
 You'll be prompted to enter a password.
@@ -58,29 +58,29 @@ You'll be prompted to enter a password.
 
 ```bash
 # Foreground mode (recommended for first-time setup)
-nexus-cli start
+ahenk-cli start
 
 # Background mode
-nexus-cli start --daemon
+ahenk-cli start --daemon
 ```
 
 3. **Check sync status:**
 
 ```bash
-nexus-cli status
+ahenk-cli status
 ```
 
 4. **View logs:**
 
 ```bash
-nexus-cli logs --follow
+ahenk-cli logs --follow
 ```
 
 ## Commands
 
 ### Initialization
 
-#### `nexus-cli init`
+#### `ahenk-cli init`
 
 Initialize a new Nexus database and configuration.
 
@@ -94,18 +94,18 @@ Initialize a new Nexus database and configuration.
 
 ```bash
 # Initialize with user
-nexus-cli init --user alice --email alice@example.com
+ahenk-cli init --user alice --email alice@example.com
 
 # Initialize with custom database path
-nexus-cli init --path /var/lib/nexus/db.sqlite --user alice --email alice@example.com
+ahenk-cli init --path /var/lib/nexus/db.sqlite --user alice --email alice@example.com
 
 # Initialize database only (no user)
-nexus-cli init
+ahenk-cli init
 ```
 
 ### Daemon Management
 
-#### `nexus-cli start`
+#### `ahenk-cli start`
 
 Start the synchronization daemon.
 
@@ -118,24 +118,24 @@ Start the synchronization daemon.
 
 ```bash
 # Start in foreground (recommended for debugging)
-nexus-cli start
+ahenk-cli start
 
 # Start in background
-nexus-cli start --daemon
+ahenk-cli start --daemon
 
 # Start on specific port
-nexus-cli start --port 9000
+ahenk-cli start --port 9000
 ```
 
-#### `nexus-cli stop`
+#### `ahenk-cli stop`
 
 Stop the running daemon.
 
 ```bash
-nexus-cli stop
+ahenk-cli stop
 ```
 
-#### `nexus-cli restart`
+#### `ahenk-cli restart`
 
 Restart the daemon.
 
@@ -144,13 +144,13 @@ Restart the daemon.
 
 ```bash
 # Restart in foreground
-nexus-cli restart
+ahenk-cli restart
 
 # Restart in background
-nexus-cli restart --daemon
+ahenk-cli restart --daemon
 ```
 
-#### `nexus-cli status`
+#### `ahenk-cli status`
 
 Show daemon status and synchronization information.
 
@@ -163,21 +163,21 @@ Show daemon status and synchronization information.
 
 ```bash
 # Single status check
-nexus-cli status
+ahenk-cli status
 
 # Watch mode (updates every 2 seconds)
-nexus-cli status --watch
+ahenk-cli status --watch
 
 # Watch with custom interval
-nexus-cli status --watch --interval 5
+ahenk-cli status --watch --interval 5
 
 # JSON output
-nexus-cli status --json
+ahenk-cli status --json
 ```
 
 ### Sync Operations
 
-#### `nexus-cli sync`
+#### `ahenk-cli sync`
 
 Trigger a synchronization now.
 
@@ -188,15 +188,15 @@ Trigger a synchronization now.
 
 ```bash
 # Trigger sync
-nexus-cli sync
+ahenk-cli sync
 
 # Force full sync
-nexus-cli sync --force
+ahenk-cli sync --force
 ```
 
 ### Peer Management
 
-#### `nexus-cli peer list`
+#### `ahenk-cli peer list`
 
 List all connected peers.
 
@@ -205,29 +205,29 @@ List all connected peers.
 
 ```bash
 # List peers
-nexus-cli peer list
+ahenk-cli peer list
 
 # JSON output
-nexus-cli peer list --json
+ahenk-cli peer list --json
 ```
 
-#### `nexus-cli peer add <MULTIADDR>`
+#### `ahenk-cli peer add <MULTIADDR>`
 
 Add a peer or bootstrap node.
 
 ```bash
-nexus-cli peer add "/ip4/192.168.1.100/tcp/9000/p2p/12D3KooWABC..."
+ahenk-cli peer add "/ip4/192.168.1.100/tcp/9000/p2p/12D3KooWABC..."
 ```
 
-#### `nexus-cli peer remove <PEER_ID>`
+#### `ahenk-cli peer remove <PEER_ID>`
 
 Remove a peer.
 
 ```bash
-nexus-cli peer remove "12D3KooWABC..."
+ahenk-cli peer remove "12D3KooWABC..."
 ```
 
-#### `nexus-cli peer info <PEER_ID>`
+#### `ahenk-cli peer info <PEER_ID>`
 
 Show detailed information about a peer.
 
@@ -236,15 +236,15 @@ Show detailed information about a peer.
 
 ```bash
 # Show peer info
-nexus-cli peer info "12D3KooWABC..."
+ahenk-cli peer info "12D3KooWABC..."
 
 # JSON output
-nexus-cli peer info "12D3KooWABC..." --json
+ahenk-cli peer info "12D3KooWABC..." --json
 ```
 
 ### Device Management
 
-#### `nexus-cli device list`
+#### `ahenk-cli device list`
 
 List all user devices.
 
@@ -253,13 +253,13 @@ List all user devices.
 
 ```bash
 # List devices
-nexus-cli device list
+ahenk-cli device list
 
 # JSON output
-nexus-cli device list --json
+ahenk-cli device list --json
 ```
 
-#### `nexus-cli device pair`
+#### `ahenk-cli device pair`
 
 Generate a QR code for pairing a new device.
 
@@ -269,31 +269,31 @@ Generate a QR code for pairing a new device.
 
 ```bash
 # Generate pairing QR for mobile
-nexus-cli device pair
+ahenk-cli device pair
 
 # Generate for specific device type
-nexus-cli device pair --device-type tablet --name "iPad Pro"
+ahenk-cli device pair --device-type tablet --name "iPad Pro"
 ```
 
-#### `nexus-cli device authorize <CODE>`
+#### `ahenk-cli device authorize <CODE>`
 
 Authorize a device using a pairing code.
 
 ```bash
-nexus-cli device authorize "ABC123DEF456"
+ahenk-cli device authorize "ABC123DEF456"
 ```
 
-#### `nexus-cli device remove <DEVICE_ID>`
+#### `ahenk-cli device remove <DEVICE_ID>`
 
 Remove a device from the user account.
 
 ```bash
-nexus-cli device remove "550e8400-e29b-41d4-a716-446655440000"
+ahenk-cli device remove "550e8400-e29b-41d4-a716-446655440000"
 ```
 
 ### Configuration
 
-#### `nexus-cli config set <KEY> <VALUE>`
+#### `ahenk-cli config set <KEY> <VALUE>`
 
 Set a configuration value.
 
@@ -301,28 +301,28 @@ Set a configuration value.
 
 ```bash
 # Enable mDNS discovery
-nexus-cli config set sync.enable_mdns true
+ahenk-cli config set sync.enable_mdns true
 
 # Set listen port
-nexus-cli config set network.listen_port 9000
+ahenk-cli config set network.listen_port 9000
 
 # Set log level
-nexus-cli config set logging.level debug
+ahenk-cli config set logging.level debug
 ```
 
-#### `nexus-cli config get <KEY>`
+#### `ahenk-cli config get <KEY>`
 
 Get a configuration value.
 
 ```bash
 # Get database path
-nexus-cli config get database.path
+ahenk-cli config get database.path
 
 # Get sync status
-nexus-cli config get sync.enabled
+ahenk-cli config get sync.enabled
 ```
 
-#### `nexus-cli config list`
+#### `ahenk-cli config list`
 
 List all configuration settings.
 
@@ -331,25 +331,25 @@ List all configuration settings.
 
 ```bash
 # List all config
-nexus-cli config list
+ahenk-cli config list
 
 # JSON output
-nexus-cli config list --json
+ahenk-cli config list --json
 ```
 
-#### `nexus-cli config edit`
+#### `ahenk-cli config edit`
 
 Open the configuration file in your default editor.
 
 ```bash
-nexus-cli config edit
+ahenk-cli config edit
 ```
 
 The editor is determined by the `$EDITOR` environment variable (defaults to `vi` on Unix, `notepad` on Windows).
 
 ### Logs & Debugging
 
-#### `nexus-cli logs`
+#### `ahenk-cli logs`
 
 View synchronization logs.
 
@@ -362,19 +362,19 @@ View synchronization logs.
 
 ```bash
 # View last 50 lines
-nexus-cli logs
+ahenk-cli logs
 
 # Follow logs in real-time
-nexus-cli logs --follow
+ahenk-cli logs --follow
 
 # Show last 100 lines
-nexus-cli logs --lines 100
+ahenk-cli logs --lines 100
 
 # Filter by level
-nexus-cli logs --level error --follow
+ahenk-cli logs --level error --follow
 ```
 
-#### `nexus-cli query <SQL>`
+#### `ahenk-cli query <SQL>`
 
 Execute a SQL query on the database (for debugging).
 
@@ -385,18 +385,18 @@ Execute a SQL query on the database (for debugging).
 
 ```bash
 # Query users
-nexus-cli query "SELECT * FROM users"
+ahenk-cli query "SELECT * FROM users"
 
 # Count tasks
-nexus-cli query "SELECT COUNT(*) FROM tasks"
+ahenk-cli query "SELECT COUNT(*) FROM tasks"
 
 # JSON output
-nexus-cli query "SELECT * FROM users" --json
+ahenk-cli query "SELECT * FROM users" --json
 ```
 
 **⚠️ Warning:** This command provides direct database access. Use with caution!
 
-#### `nexus-cli oplog`
+#### `ahenk-cli oplog`
 
 View the operation log (sync history).
 
@@ -410,24 +410,24 @@ View the operation log (sync history).
 
 ```bash
 # View recent operations
-nexus-cli oplog
+ahenk-cli oplog
 
 # View last 100 operations
-nexus-cli oplog --limit 100
+ahenk-cli oplog --limit 100
 
 # View operations from specific device
-nexus-cli oplog --device "550e8400-e29b-41d4-a716-446655440000"
+ahenk-cli oplog --device "550e8400-e29b-41d4-a716-446655440000"
 
 # View operations since timestamp
-nexus-cli oplog --since 1704067200
+ahenk-cli oplog --since 1704067200
 
 # JSON output
-nexus-cli oplog --json
+ahenk-cli oplog --json
 ```
 
 ### Utilities
 
-#### `nexus-cli info`
+#### `ahenk-cli info`
 
 Show system and version information.
 
@@ -436,18 +436,18 @@ Show system and version information.
 
 ```bash
 # Show info
-nexus-cli info
+ahenk-cli info
 
 # JSON output
-nexus-cli info --json
+ahenk-cli info --json
 ```
 
-#### `nexus-cli doctor`
+#### `ahenk-cli doctor`
 
 Run diagnostic checks on the system.
 
 ```bash
-nexus-cli doctor
+ahenk-cli doctor
 ```
 
 This command checks:
@@ -456,15 +456,15 @@ This command checks:
 - User configuration
 - Device configuration
 
-#### `nexus-cli export <PATH>`
+#### `ahenk-cli export <PATH>`
 
 Export the database to a file.
 
 ```bash
-nexus-cli export backup.db
+ahenk-cli export backup.db
 ```
 
-#### `nexus-cli import <PATH>`
+#### `ahenk-cli import <PATH>`
 
 Import a database from a file.
 
@@ -473,10 +473,10 @@ Import a database from a file.
 
 ```bash
 # Import database
-nexus-cli import backup.db
+ahenk-cli import backup.db
 
 # Force overwrite
-nexus-cli import backup.db --force
+ahenk-cli import backup.db --force
 ```
 
 ## Configuration File
@@ -550,48 +550,48 @@ max_files = 5
 
 ```bash
 # 1. Initialize with user
-nexus-cli init --user alice --email alice@example.com
+ahenk-cli init --user alice --email alice@example.com
 
 # 2. Configure bootstrap nodes (optional)
-nexus-cli config set network.bootstrap_nodes '["node1.example.com", "node2.example.com"]'
+ahenk-cli config set network.bootstrap_nodes '["node1.example.com", "node2.example.com"]'
 
 # 3. Start daemon in foreground (for testing)
-nexus-cli start
+ahenk-cli start
 
 # In another terminal:
 # 4. Check status
-nexus-cli status
+ahenk-cli status
 
 # 5. View logs
-nexus-cli logs --follow
+ahenk-cli logs --follow
 
 # 6. Once verified, stop foreground daemon
 # (Ctrl+C in the daemon terminal)
 
 # 7. Start in background
-nexus-cli start --daemon
+ahenk-cli start --daemon
 
 # 8. Verify it's running
-nexus-cli status
+ahenk-cli status
 ```
 
 ### Monitoring and Debugging
 
 ```bash
 # Watch status continuously
-nexus-cli status --watch
+ahenk-cli status --watch
 
 # Follow logs with error filter
-nexus-cli logs --follow --level error
+ahenk-cli logs --follow --level error
 
 # Check system health
-nexus-cli doctor
+ahenk-cli doctor
 
 # View recent sync operations
-nexus-cli oplog --limit 20
+ahenk-cli oplog --limit 20
 
 # Query database
-nexus-cli query "SELECT COUNT(*) as total FROM tasks"
+ahenk-cli query "SELECT COUNT(*) as total FROM tasks"
 ```
 
 ### Multi-Device Setup
@@ -599,27 +599,27 @@ nexus-cli query "SELECT COUNT(*) as total FROM tasks"
 On the primary device:
 ```bash
 # Generate pairing QR code
-nexus-cli device pair
+ahenk-cli device pair
 ```
 
 On the new device:
 ```bash
 # Initialize and authorize
-nexus-cli init
-nexus-cli device authorize "PAIRING_CODE_FROM_QR"
-nexus-cli start --daemon
+ahenk-cli init
+ahenk-cli device authorize "PAIRING_CODE_FROM_QR"
+ahenk-cli start --daemon
 ```
 
 ### Backup and Restore
 
 ```bash
 # Backup database
-nexus-cli export ~/backups/nexus-backup-$(date +%Y%m%d).db
+ahenk-cli export ~/backups/nexus-backup-$(date +%Y%m%d).db
 
 # Restore database
-nexus-cli stop
-nexus-cli import ~/backups/nexus-backup-20250109.db --force
-nexus-cli start --daemon
+ahenk-cli stop
+ahenk-cli import ~/backups/nexus-backup-20250109.db --force
+ahenk-cli start --daemon
 ```
 
 ## Troubleshooting
@@ -628,68 +628,68 @@ nexus-cli start --daemon
 
 1. Check if already running:
    ```bash
-   nexus-cli status
+   ahenk-cli status
    ```
 
 2. Check configuration:
    ```bash
-   nexus-cli config list
-   nexus-cli doctor
+   ahenk-cli config list
+   ahenk-cli doctor
    ```
 
 3. Check logs:
    ```bash
-   nexus-cli logs --lines 100
+   ahenk-cli logs --lines 100
    ```
 
 4. Try foreground mode for debugging:
    ```bash
-   nexus-cli start
+   ahenk-cli start
    ```
 
 ### Sync Not Working
 
 1. Check daemon status:
    ```bash
-   nexus-cli status
+   ahenk-cli status
    ```
 
 2. Check peer connections:
    ```bash
-   nexus-cli peer list
+   ahenk-cli peer list
    ```
 
 3. Check logs for errors:
    ```bash
-   nexus-cli logs --follow --level error
+   ahenk-cli logs --follow --level error
    ```
 
 4. Verify network configuration:
    ```bash
-   nexus-cli config get network.listen_port
-   nexus-cli config get sync.enable_mdns
+   ahenk-cli config get network.listen_port
+   ahenk-cli config get sync.enable_mdns
    ```
 
 ### Database Corruption
 
 1. Stop daemon:
    ```bash
-   nexus-cli stop
+   ahenk-cli stop
    ```
 
 2. Export current database (if possible):
    ```bash
-   nexus-cli export ~/nexus-damaged.db
+   ahenk-cli export ~/nexus-damaged.db
    ```
 
 3. Restore from backup:
    ```bash
-   nexus-cli import ~/backups/nexus-backup-latest.db --force
+   ahenk-cli import ~/backups/nexus-backup-latest.db --force
    ```
 
 4. Restart daemon:
    ```bash
-   nexus-cli start --daemon
+   ahenk-cli start --daemon
    ```
 
 ### Configuration Issues
@@ -702,12 +702,12 @@ nexus-cli start --daemon
 2. Reset to defaults:
    ```bash
    rm ~/.nexus/config.toml
-   nexus-cli init
+   ahenk-cli init
    ```
 
 3. Edit configuration:
    ```bash
-   nexus-cli config edit
+   ahenk-cli config edit
    ```
 
 ## Global Options
@@ -724,29 +724,29 @@ All commands support these global options:
 
 ```bash
 # Use custom config file
-nexus-cli --config /etc/nexus/config.toml status
+ahenk-cli --config /etc/nexus/config.toml status
 
 # Verbose output
-nexus-cli --verbose start
+ahenk-cli --verbose start
 
 # Show version
-nexus-cli --version
+ahenk-cli --version
 ```
 
 ## Environment Variables
 
 - `RUST_LOG` - Control log level (set automatically by `--verbose`)
-- `EDITOR` - Editor to use for `nexus-cli config edit`
+- `EDITOR` - Editor to use for `ahenk-cli config edit`
 
 **Examples:**
 
 ```bash
 # Set custom editor
 export EDITOR=nano
-nexus-cli config edit
+ahenk-cli config edit
 
 # Override log level
-RUST_LOG=debug nexus-cli start
+RUST_LOG=debug ahenk-cli start
 ```
 
 ## Exit Codes
@@ -759,13 +759,13 @@ RUST_LOG=debug nexus-cli start
 For command-specific help:
 
 ```bash
-nexus-cli <command> --help
+ahenk-cli <command> --help
 ```
 
 For general help:
 
 ```bash
-nexus-cli --help
+ahenk-cli --help
 ```
 
 For more information, see:

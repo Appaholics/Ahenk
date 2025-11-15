@@ -1,11 +1,11 @@
-# CFOST: A Comprehensive Deep Dive
-**Conflict-Free Offline Synchronization Tool**
+# Ahenk: A Comprehensive Deep Dive
+**Cross-platform database synchronization infrastructure**
 
 ---
 
 ## 🎯 Executive Summary
 
-CFOST is a **database synchronization infrastructure library** written in Rust that solves one of the most challenging problems in distributed systems: **how to keep data consistent across multiple devices that may be offline, have conflicting changes, and need to work independently without a central server**.
+Ahenk is a **database synchronization infrastructure library** written in Rust that solves one of the most challenging problems in distributed systems: **how to keep data consistent across multiple devices that may be offline, have conflicting changes, and need to work independently without a central server**.
 
 ---
 
@@ -62,7 +62,7 @@ Mobile App → Internet → Central Server → Internet → Desktop App
 ```
 
 **Traditional Solution:** Server decides which version to keep (data loss!)
-**CFOST Solution:** Merges both changes intelligently using CRDTs
+**Ahenk Solution:** Merges both changes intelligently using CRDTs
 
 #### Scenario 2: Team Collaboration App
 ```
@@ -74,7 +74,7 @@ Mobile App → Internet → Central Server → Internet → Desktop App
 ```
 
 **Traditional Solution:** Last-write-wins (Alice and Bob lose work!)
-**CFOST Solution:** All edits merge using causal ordering
+**Ahenk Solution:** All edits merge using causal ordering
 
 #### Scenario 3: IoT Device Network
 ```
@@ -89,18 +89,18 @@ Mobile App → Internet → Central Server → Internet → Desktop App
 
 ## 2. Core Purpose & Philosophy
 
-### What CFOST Is
+### What Ahenk Is
 
-CFOST is **infrastructure**, not an application. Think of it as:
+Ahenk is **infrastructure**, not an application. Think of it as:
 
 **Analogy 1: Database Engine**
 - Just like PostgreSQL provides SQL storage infrastructure
-- CFOST provides **distributed sync infrastructure**
+- Ahenk provides **distributed sync infrastructure**
 - Apps build on top of it, implementing their own logic
 
 **Analogy 2: Operating System**
 - Just like Linux provides file system, networking, process management
-- CFOST provides **sync primitives, P2P networking, conflict resolution**
+- Ahenk provides **sync primitives, P2P networking, conflict resolution**
 - Apps use these building blocks
 
 ### Design Philosophy
@@ -111,7 +111,7 @@ CFOST is **infrastructure**, not an application. Think of it as:
 // Traditional (Online-Required):
 let data = fetch_from_server().await?;  // Fails offline!
 
-// CFOST (Offline-First):
+// Ahenk (Offline-First):
 let data = fetch_from_local_db()?;      // Always works!
 sync_when_online();                      // Background sync
 ```
@@ -132,7 +132,7 @@ Device B: [1, 4, 5]    → merge →    [1, 2, 3, 4, 5]
 
 ```
 Traditional: Manual conflict resolution (user chooses which version)
-CFOST: Automatic merge using mathematical guarantees (CRDTs)
+Ahenk: Automatic merge using mathematical guarantees (CRDTs)
 ```
 
 **Principle:** Use proven mathematical structures (CRDTs) that guarantee conflict-free merges.
@@ -168,7 +168,7 @@ End-to-end encryption by default
 │              YOUR APPLICATION                       │
 │  (Todo App, Notes App, Collaboration Tool, etc.)   │
 ├─────────────────────────────────────────────────────┤
-│              CFOST PUBLIC API                       │
+│              Ahenk PUBLIC API                       │
 │  (initialize_db, register_user, create_oplog...)   │
 ├─────────────────────────────────────────────────────┤
 │         BUSINESS LOGIC LAYER                        │
@@ -320,9 +320,9 @@ For any operation A:
   merge(A, A) = A  (Idempotent)
 ```
 
-### CFOST's CRDT Approach
+### Ahenk's CRDT Approach
 
-CFOST uses **Operation-based CRDTs** (CmRDT):
+Ahenk uses **Operation-based CRDTs** (CmRDT):
 
 ```
 State-based (CvRDT):
@@ -330,7 +330,7 @@ State-based (CvRDT):
   - Large bandwidth
   - Simple merge
 
-Operation-based (CmRDT):  ← CFOST uses this
+Operation-based (CmRDT):  ← Ahenk uses this
   - Send operations only
   - Small bandwidth
   - Requires causal delivery
@@ -378,7 +378,7 @@ OplogEntry {
 
 ### Last-Write-Wins (LWW) Strategy
 
-CFOST implements LWW-Element-Set CRDT:
+Ahenk implements LWW-Element-Set CRDT:
 
 ```rust
 struct LWWElement {
@@ -409,7 +409,7 @@ fn merge(local: LWWElement, remote: LWWElement) -> LWWElement {
 
 ### libp2p: The Foundation
 
-CFOST uses **libp2p**, the same networking stack as:
+Ahenk uses **libp2p**, the same networking stack as:
 - IPFS (InterPlanetary File System)
 - Ethereum 2.0
 - Polkadot
@@ -453,7 +453,7 @@ CFOST uses **libp2p**, the same networking stack as:
 
 ```rust
 // Device A broadcasts
-mDNS: "cfost-sync._tcp.local" → "Device A here!"
+mDNS: "ahenk-sync._tcp.local" → "Device A here!"
 
 // Device B discovers
 mDNS listener hears → connects to Device A
@@ -542,7 +542,7 @@ Office Network (NAT):
 Problem: Phone can't directly connect to Desktop (both behind NAT)
 ```
 
-**CFOST's Solution:**
+**Ahenk's Solution:**
 
 ```
 Step 1: Both connect to relay server
@@ -689,7 +689,7 @@ libp2p Noise Protocol:
 
 **Problem:** Users want notes on all devices, working offline
 
-**CFOST Implementation:**
+**Ahenk Implementation:**
 ```rust
 // Note structure
 struct Note {
@@ -1036,7 +1036,7 @@ let op4 = OplogEntry {
 
 ### vs. Firebase/Supabase (Backend-as-a-Service)
 
-| Feature | CFOST | Firebase/Supabase |
+| Feature | Ahenk | Firebase/Supabase |
 |---------|-------|-------------------|
 | **Offline Support** | ✅ Native, works fully offline | ⚠️ Cache only, limited |
 | **Server Required** | ❌ No (P2P) | ✅ Yes (always) |
@@ -1048,7 +1048,7 @@ let op4 = OplogEntry {
 
 ### vs. CouchDB/PouchDB (Sync Database)
 
-| Feature | CFOST | CouchDB/PouchDB |
+| Feature | Ahenk | CouchDB/PouchDB |
 |---------|-------|-----------------|
 | **Language** | Rust (fast, safe) | JavaScript/Erlang |
 | **Binary Size** | ~5MB | ~50MB+ (with Node) |
@@ -1059,7 +1059,7 @@ let op4 = OplogEntry {
 
 ### vs. Automerge/Yjs (CRDT Libraries)
 
-| Feature | CFOST | Automerge/Yjs |
+| Feature | Ahenk | Automerge/Yjs |
 |---------|-------|---------------|
 | **Full Stack** | ✅ DB + Sync + Network | ❌ CRDT only |
 | **Persistence** | ✅ SQLite built-in | ❌ DIY |
@@ -1069,7 +1069,7 @@ let op4 = OplogEntry {
 
 ### vs. Gun.js (Decentralized DB)
 
-| Feature | CFOST | Gun.js |
+| Feature | Ahenk | Gun.js |
 |---------|-------|--------|
 | **Type Safety** | ✅ Rust (compile-time) | ❌ JavaScript (runtime) |
 | **Performance** | ✅ Native (100k ops/sec) | ⚠️ JS (10k ops/sec) |
@@ -1144,7 +1144,7 @@ fn upgrade_v1_to_v2(data: &mut Value) {
 ### Topic 3: Multi-Master Replication
 
 **Traditional:** Single master (writes), multiple replicas (reads)
-**CFOST:** Every device is a master (writes anywhere)
+**Ahenk:** Every device is a master (writes anywhere)
 
 ```
 Traditional:
@@ -1152,7 +1152,7 @@ Traditional:
   Read Replica 2 ←┤← Master (writes)
   Read Replica 3 ←┘
 
-CFOST:
+Ahenk:
   Device A (read/write) ←→ Device B (read/write)
        ↕                        ↕
   Device C (read/write) ←→ Device D (read/write)
@@ -1188,7 +1188,7 @@ sync_manager.sync_with_config(sync_config)?;
 
 ### Topic 5: Cross-Platform Compilation
 
-CFOST compiles to:
+Ahenk compiles to:
 - **iOS**: `aarch64-apple-ios` (Swift/Objective-C FFI)
 - **Android**: `aarch64-linux-android` (JNI/Kotlin)
 - **WebAssembly**: `wasm32-unknown-unknown` (JavaScript)
@@ -1197,7 +1197,7 @@ CFOST compiles to:
 ```rust
 // Expose to other languages via FFI
 #[no_mangle]
-pub extern "C" fn cfost_initialize_db(path: *const c_char) -> *mut Connection {
+pub extern "C" fn ahenk_initialize_db(path: *const c_char) -> *mut Connection {
     let path = unsafe { CStr::from_ptr(path).to_str().unwrap() };
     let conn = initialize_database(path).unwrap();
     Box::into_raw(Box::new(conn))
@@ -1253,7 +1253,7 @@ proptest! {
 
 ## 🎓 Summary
 
-**CFOST is a complete infrastructure for building offline-first, peer-to-peer synchronized applications.**
+**Ahenk is a complete infrastructure for building offline-first, peer-to-peer synchronized applications.**
 
 ### Core Value Propositions
 
@@ -1289,4 +1289,4 @@ proptest! {
 
 **The Future is Decentralized, Offline-First, User-Owned.**
 
-CFOST provides the infrastructure to build that future. 🚀
+Ahenk provides the infrastructure to build that future. 🚀

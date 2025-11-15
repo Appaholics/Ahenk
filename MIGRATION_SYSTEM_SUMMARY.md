@@ -6,7 +6,7 @@
 
 ## Overview
 
-A comprehensive database migration and versioning system has been successfully implemented for `nexus-core`. This system enables safe, automatic schema upgrades while maintaining compatibility with the P2P synchronization architecture.
+A comprehensive database migration and versioning system has been successfully implemented for `ahenk`. This system enables safe, automatic schema upgrades while maintaining compatibility with the P2P synchronization architecture.
 
 ## What Was Implemented
 
@@ -212,7 +212,7 @@ task: { content: "Buy eggs", is_completed: false, priority: 5 }
 ### Public Functions
 
 ```rust
-use cfost::{
+use ahenk::{
     initialize_database,
     get_current_version,
     get_migration_history,
@@ -239,7 +239,7 @@ apply_migrations(&conn)?;
 ## File Structure
 
 ```
-nexus-core/
+ahenk/
 ├── src/
 │   └── db/
 │       ├── migrations/

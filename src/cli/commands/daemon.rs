@@ -26,11 +26,11 @@ pub async fn start(
 
     // Check if user is configured
     let user_config = config.user.as_ref().ok_or_else(|| {
-        CliError::ConfigError("User not configured. Run 'nexus-cli init' first.".to_string())
+        CliError::ConfigError("User not configured. Run 'ahenk-cli init' first.".to_string())
     })?;
 
     let device_config = config.device.as_ref().ok_or_else(|| {
-        CliError::ConfigError("Device not configured. Run 'nexus-cli init' first.".to_string())
+        CliError::ConfigError("Device not configured. Run 'ahenk-cli init' first.".to_string())
     })?;
 
     if daemon {

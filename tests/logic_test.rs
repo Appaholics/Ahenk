@@ -1,4 +1,4 @@
-//! Logic layer tests for nexus-core synchronization infrastructure.
+//! Logic layer tests for ahenk synchronization infrastructure.
 //!
 //! These tests verify the business logic for:
 //! - User authentication (registration, login)
@@ -6,10 +6,10 @@
 //! - P2P sync messages
 //! - Peer management
 
+use ahenk::db::operations;
+use ahenk::logic;
+use ahenk::models::{Device, User};
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
-use cfost::db::operations;
-use cfost::logic;
-use cfost::models::{Device, User};
 use chrono::Utc;
 use rusqlite::Connection;
 use uuid::Uuid;
@@ -239,7 +239,7 @@ fn test_generate_device_id() {
 
 #[test]
 fn test_sync_message_encode_decode() {
-    use cfost::logic::sync::{decode_sync_message, encode_sync_message, SyncMessage};
+    use ahenk::logic::sync::{SyncMessage, decode_sync_message, encode_sync_message};
 
     let user_id = Uuid::new_v4();
     let device_id = Uuid::new_v4();
@@ -292,7 +292,7 @@ fn test_sync_message_encode_decode() {
 
 #[test]
 fn test_update_peer_info() {
-    use cfost::logic::sync::update_peer_info;
+    use ahenk::logic::sync::update_peer_info;
 
     let (conn, user_id, _device_id) = setup_db_with_user_and_device();
 
@@ -337,7 +337,7 @@ fn test_sync_with_peer() {
     // Original test used task lists and tasks which are no longer in core.
     // Apps should implement their own sync tests using their data types.
 
-    use cfost::crdt;
+    use ahenk::crdt;
 
     // Setup two "devices" with separate databases but same user
     let (mut conn1, user_id, device_id1) = setup_db_with_user_and_device();

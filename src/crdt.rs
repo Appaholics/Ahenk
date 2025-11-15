@@ -5,7 +5,7 @@
 //! - Operation log management
 //! - Conflict resolution primitives
 //!
-//! Apps using nexus-core should implement their own table-specific merge logic
+//! Apps using ahenk should implement their own table-specific merge logic
 //! using the HLC and oplog primitives provided here.
 
 use crate::OplogEntry;
@@ -134,7 +134,7 @@ impl Ord for HybridLogicalClock {
 ///
 /// # Example
 /// ```rust,no_run
-/// use cfost::{local_apply, build_oplog_entry};
+/// use ahenk::{local_apply, build_oplog_entry};
 /// # use rusqlite::Connection;
 /// # use uuid::Uuid;
 ///
@@ -191,7 +191,7 @@ pub fn local_apply(conn: &mut Connection, op: &OplogEntry) -> Result<(), rusqlit
 ///
 /// # Example
 /// ```rust,no_run
-/// use cfost::{merge, OplogEntry};
+/// use ahenk::{merge, OplogEntry};
 /// # use rusqlite::Connection;
 ///
 /// # fn example(mut conn: Connection, remote_ops: Vec<OplogEntry>) -> Result<(), Box<dyn std::error::Error>> {

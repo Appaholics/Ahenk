@@ -1,4 +1,4 @@
-//! Migration system tests for nexus-core.
+//! Migration system tests for ahenk.
 //!
 //! These tests verify:
 //! - Fresh database initialization
@@ -6,9 +6,9 @@
 //! - Schema correctness
 //! - Data preservation across migrations
 
-use cfost::db::migrations::{apply_migrations, get_current_version, get_migration_history};
-use cfost::db::operations::{create_user, get_user};
-use cfost::models::User;
+use ahenk::db::migrations::{apply_migrations, get_current_version, get_migration_history};
+use ahenk::db::operations::{create_user, get_user};
+use ahenk::models::User;
 use chrono::Utc;
 use rusqlite::Connection;
 use uuid::Uuid;

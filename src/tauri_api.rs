@@ -1,6 +1,6 @@
 //! Tauri API module - only available with the "tauri-api" feature
 //!
-//! This module provides Tauri command handlers for the nexus-core library.
+//! This module provides Tauri command handlers for the ahenk library.
 
 #[cfg(feature = "tauri-api")]
 mod tauri_commands {

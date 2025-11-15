@@ -1,4 +1,4 @@
-//! Core data models for nexus-core database synchronization infrastructure.
+//! Core data models for ahenk database synchronization infrastructure.
 //!
 //! This module contains the essential types for P2P database synchronization:
 //! - User and Device models for authentication and device management

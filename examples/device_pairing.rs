@@ -8,7 +8,7 @@
 ///
 /// Run this example:
 ///   cargo run --example device_pairing
-use cfost::*;
+use ahenk::*;
 use libp2p::identity;
 use std::io::{self, Write};
 

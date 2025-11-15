@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide covers different ways to install and use `nexus-core` in your projects.
+This guide covers different ways to install and use `ahenk` in your projects.
 
 ## Table of Contents
 
@@ -31,7 +31,7 @@ This guide covers different ways to install and use `nexus-core` in your project
 
 ### System Dependencies
 
-nexus-core uses bundled SQLite, so no separate SQLite installation is required. However, some platforms may need additional dependencies:
+ahenk uses bundled SQLite, so no separate SQLite installation is required. However, some platforms may need additional dependencies:
 
 #### Linux
 ```bash
@@ -60,11 +60,11 @@ xcode-select --install
 
 ### From crates.io
 
-Add `nexus-core` to your `Cargo.toml`:
+Add `ahenk` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-nexus-core = "0.1.0"
+ahenk = "0.1.0"
 ```
 
 Then run:
@@ -78,7 +78,7 @@ Clone the repository and build:
 
 ```bash
 git clone https://github.com/kodfikirsanat/focussuite.git
-cd focussuite/nexus-core
+cd focussuite/ahenk
 cargo build --release
 ```
 
@@ -88,14 +88,14 @@ For local development with the latest changes:
 
 ```toml
 [dependencies]
-nexus-core = { path = "../nexus-core" }
+ahenk = { path = "../ahenk" }
 ```
 
 Or use as a git dependency:
 
 ```toml
 [dependencies]
-nexus-core = { git = "https://github.com/kodfikirsanat/focussuite", branch = "main" }
+ahenk = { git = "https://github.com/kodfikirsanat/focussuite", branch = "main" }
 ```
 
 ## Platform-Specific Setup
@@ -148,7 +148,7 @@ For detailed cross-compilation instructions, see [CROSS_COMPILATION.md](CROSS_CO
 
 ### C/C++ Projects
 
-nexus-core provides a C-compatible FFI interface:
+ahenk provides a C-compatible FFI interface:
 
 1. Build as a C library:
    ```bash
@@ -205,7 +205,7 @@ Enable Tauri support:
 
 ```toml
 [dependencies]
-nexus-core = { version = "0.1.0", features = ["tauri-api"] }
+ahenk = { version = "0.1.0", features = ["tauri-api"] }
 ```
 
 ## Verification
@@ -213,7 +213,7 @@ nexus-core = { version = "0.1.0", features = ["tauri-api"] }
 After installation, verify it works:
 
 ```rust
-use cfost::{initialize_database, register_user};
+use ahenk::{initialize_database, register_user};
 
 fn main() -> Result<(), nexus_core::NexusError> {
     // Initialize database
@@ -305,4 +305,4 @@ After installation:
 2. Check [CHANGELOG.md](CHANGELOG.md) for version history
 3. Review [docs/](docs/) for detailed guides
 4. Explore [examples/](examples/) for usage patterns
-5. Review the [API documentation](https://docs.rs/nexus-core)
+5. Review the [API documentation](https://docs.rs/ahenk)

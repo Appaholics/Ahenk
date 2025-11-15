@@ -1,13 +1,13 @@
 # Migration Quick Start Guide
 
-Quick reference for common migration tasks in nexus-core.
+Quick reference for common migration tasks in ahenk.
 
 ## For End Users
 
 ### Check Your Database Version
 
 ```rust
-use cfost::{initialize_database, get_current_version};
+use ahenk::{initialize_database, get_current_version};
 
 let conn = initialize_database("nexus.db")?;
 let version = get_current_version(&conn)?;
@@ -19,7 +19,7 @@ println!("Database schema version: {}", version);
 Just open the database - migrations run automatically:
 
 ```rust
-use cfost::initialize_database;
+use ahenk::initialize_database;
 
 // Opens database and applies any pending migrations
 let conn = initialize_database("nexus.db")?;
@@ -28,7 +28,7 @@ let conn = initialize_database("nexus.db")?;
 ### View Migration History
 
 ```rust
-use cfost::{initialize_database, get_migration_history};
+use ahenk::{initialize_database, get_migration_history};
 
 let conn = initialize_database("nexus.db")?;
 let history = get_migration_history(&conn)?;
@@ -61,7 +61,7 @@ cp nexus.db nexus.db.backup.$(date +%Y%m%d)
 **1. Create migration file:**
 
 ```bash
-cd nexus-core/src/db/migrations
+cd ahenk/src/db/migrations
 nano 002_add_task_tags.sql
 ```
 
@@ -110,7 +110,7 @@ const MIGRATIONS: &[Migration] = &[
 **3. Test:**
 
 ```bash
-cd nexus-core
+cd ahenk
 cargo test migrations
 ```
 

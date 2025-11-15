@@ -105,15 +105,15 @@ pub async fn execute(
     } else {
         println!();
         output::info(
-            "No user created. Run 'nexus-cli init --user <USERNAME> --email <EMAIL>' to create a user.",
+            "No user created. Run 'ahenk-cli init --user <USERNAME> --email <EMAIL>' to create a user.",
         );
     }
 
     println!();
     output::info("Next steps:");
-    println!("  1. Start sync daemon: nexus-cli start --daemon");
-    println!("  2. Check status: nexus-cli status");
-    println!("  3. View logs: nexus-cli logs --follow");
+    println!("  1. Start sync daemon: ahenk-cli start --daemon");
+    println!("  2. Check status: ahenk-cli status");
+    println!("  3. View logs: ahenk-cli logs --follow");
 
     Ok(())
 }

@@ -241,18 +241,13 @@ fn generate_nonce() -> String {
     hex::encode(nonce)
 }
 
-/// Verify a signature
+/// Verify a signature using Ed25519 via libp2p
 fn verify_signature(nonce: &str, signature: &[u8], public_key: &[u8]) -> bool {
-    // In a real implementation, use proper signature verification
-    // For now, this is a placeholder
-    // TODO: Implement Ed25519 signature verification using the libp2p keypair
-
-    // Decode public key and verify signature
     use libp2p::identity::PublicKey;
 
     match PublicKey::try_decode_protobuf(public_key) {
         Ok(pk) => {
-            // Verify the signature
+            // Verify the signature using the libp2p keypair
             pk.verify(nonce.as_bytes(), signature)
         }
         Err(_) => false,

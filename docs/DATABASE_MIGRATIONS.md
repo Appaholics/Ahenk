@@ -1,6 +1,6 @@
 # Database Migration & Versioning Guide
 
-This document describes the database migration system for `nexus-core` and provides step-by-step procedures for client upgrades.
+This document describes the database migration system for `ahenk` and provides step-by-step procedures for client upgrades.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ This document describes the database migration system for `nexus-core` and provi
 
 ## Overview
 
-The nexus-core database uses a migration-based versioning system to manage schema evolution. This ensures:
+The ahenk database uses a migration-based versioning system to manage schema evolution. This ensures:
 
 - **Seamless upgrades**: Clients can upgrade their local database schema automatically
 - **Version tracking**: The system knows which version each database is at
@@ -49,7 +49,7 @@ Each applied migration creates a row in this table, allowing the system to track
 
 ### Migration Files
 
-Located in `nexus-core/src/db/migrations/`:
+Located in `ahenk/src/db/migrations/`:
 
 ```
 migrations/
@@ -97,7 +97,7 @@ When a client starts with a new version of the app:
 #### Example
 
 ```rust
-use cfost::initialize_database;
+use ahenk::initialize_database;
 
 // This will automatically upgrade the database if needed
 let conn = initialize_database("nexus.db")?;
@@ -108,7 +108,7 @@ let conn = initialize_database("nexus.db")?;
 To check which version your database is at:
 
 ```rust
-use cfost::{initialize_database, get_current_version};
+use ahenk::{initialize_database, get_current_version};
 
 let conn = initialize_database("nexus.db")?;
 let version = get_current_version(&conn)?;
@@ -124,7 +124,7 @@ SELECT MAX(version) FROM schema_version;
 ### Viewing Migration History
 
 ```rust
-use cfost::{initialize_database, get_migration_history};
+use ahenk::{initialize_database, get_migration_history};
 
 let conn = initialize_database("nexus.db")?;
 let history = get_migration_history(&conn)?;
@@ -140,7 +140,7 @@ For advanced users who want explicit control:
 
 ```rust
 use rusqlite::Connection;
-use cfost::db::migrations::{apply_migrations, get_current_version};
+use ahenk::db::migrations::{apply_migrations, get_current_version};
 
 // Open connection without auto-migration
 let conn = Connection::open("nexus.db")?;
@@ -162,7 +162,7 @@ println!("Upgraded to version: {}", new_version);
 
 ### Step 1: Create Migration File
 
-Create a new file in `nexus-core/src/db/migrations/`:
+Create a new file in `ahenk/src/db/migrations/`:
 
 ```sql
 -- Migration 002: Add task priority feature
@@ -178,7 +178,7 @@ CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority);
 
 ### Step 2: Register Migration
 
-Update `nexus-core/src/db/migrations.rs`:
+Update `ahenk/src/db/migrations.rs`:
 
 ```rust
 const MIGRATIONS: &[Migration] = &[
@@ -198,7 +198,7 @@ const MIGRATIONS: &[Migration] = &[
 ### Step 3: Test Migration
 
 ```bash
-cd nexus-core
+cd ahenk
 cargo test migrations
 ```
 
@@ -229,7 +229,7 @@ If the migration introduces breaking changes, document them in:
 
 ## P2P Sync Considerations
 
-The nexus-core system uses P2P synchronization via oplogs (operation logs). This creates unique challenges for schema versioning.
+The ahenk system uses P2P synchronization via oplogs (operation logs). This creates unique challenges for schema versioning.
 
 ### Version Compatibility Matrix
 

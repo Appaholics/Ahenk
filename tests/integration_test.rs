@@ -1,4 +1,4 @@
-//! Integration tests for nexus-core database synchronization infrastructure.
+//! Integration tests for ahenk database synchronization infrastructure.
 //!
 //! These tests verify the core CRUD operations for:
 //! - Users (authentication)
@@ -6,8 +6,8 @@
 //! - OplogEntry (CRDT operation log)
 //! - Peer (P2P peer tracking)
 
-use cfost::db::operations;
-use cfost::models::{Device, OplogEntry, Peer, User};
+use ahenk::db::operations;
+use ahenk::models::{Device, OplogEntry, Peer, User};
 use chrono::Utc;
 use uuid::Uuid;
 

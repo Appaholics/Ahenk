@@ -10,7 +10,7 @@
 
 This report provides comprehensive verification that **all tasks** in the GENERAL-TODO "Core API & Storage" section have been completed, tested, and are production-ready.
 
-**Overall Assessment**: The nexus-core library demonstrates **exceptional code quality** (A+ grade, 95/100) with robust error handling, comprehensive test coverage (59 tests, 85%+ coverage), and secure implementation practices.
+**Overall Assessment**: The ahenk library demonstrates **exceptional code quality** (A+ grade, 95/100) with robust error handling, comprehensive test coverage (59 tests, 85%+ coverage), and secure implementation practices.
 
 ---
 
@@ -20,7 +20,7 @@ From `/home/r1/Projects/focussuite/GENERAL-TODO.md` Lines 9-17:
 
 | # | Task | Status | Verification |
 |---|------|--------|--------------|
-| 1 | Replace placeholder `nexus-core/src/lib.rs` with public API | ✅ Complete | 164 lines, comprehensive re-exports |
+| 1 | Replace placeholder `ahenk/src/lib.rs` with public API | ✅ Complete | 164 lines, comprehensive re-exports |
 | 2 | Low-level user/device CRUD in `db/operations.rs` | ✅ Complete | All functions implemented & tested |
 | 3 | Higher-level onboarding/auth flows in `logic` | ✅ Complete | register_user, login_user, add_device_to_user |
 | 4 | Unit tests for every DB and logic function | ✅ Complete | 59 tests total, all passing |
@@ -462,7 +462,7 @@ Argon2::default()
 ### Documentation Improvements
 
 3. **Created Comprehensive README.md**
-   - **Location**: `nexus-core/README.md`
+   - **Location**: `ahenk/README.md`
    - **Content**: 300+ lines covering installation, usage, architecture, testing
    - **Impact**: Professional project presentation
    - **Status**: ✅ Complete
@@ -553,7 +553,7 @@ Argon2::default()
 
 ## Conclusion
 
-**The nexus-core library is PRODUCTION-READY** and exceeds expectations:
+**The ahenk library is PRODUCTION-READY** and exceeds expectations:
 
 ✅ **All 8 GENERAL-TODO tasks complete (100%)**
 ✅ **59 tests passing (100%)**

@@ -1,9 +1,9 @@
-use cfost::cli::{commands, config::Config, errors::CliResult, output};
+use ahenk::cli::{commands, config::Config, errors::CliResult, output};
 use clap::{Parser, Subcommand};
 use std::process;
 
 #[derive(Parser)]
-#[command(name = "nexus-cli")]
+#[command(name = "ahenk-cli")]
 #[command(version, about = "CLI tool for Nexus synchronization engine", long_about = None)]
 struct Cli {
     /// Configuration file path

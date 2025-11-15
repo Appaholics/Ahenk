@@ -1,4 +1,4 @@
-//! Database operations for nexus-core synchronization infrastructure.
+//! Database operations for ahenk synchronization infrastructure.
 //!
 //! This module provides CRUD operations for the core sync types:
 //! - Users: Authentication and device ownership
@@ -209,6 +209,14 @@ pub fn update_device_last_seen(
     )
 }
 
+/// Delete a device by ID
+pub fn delete_device(conn: &Connection, device_id: Uuid) -> Result<usize> {
+    conn.execute(
+        "DELETE FROM devices WHERE device_id = ?1",
+        params![device_id.to_string()],
+    )
+}
+
 // ============================================================================
 // OplogEntry Operations
 // ============================================================================
@@ -301,4 +309,12 @@ pub fn get_all_peers(conn: &Connection) -> Result<Vec<Peer>> {
     }
 
     Ok(peers)
+}
+
+/// Delete a peer by ID
+pub fn delete_peer(conn: &Connection, peer_id: Uuid) -> Result<usize> {
+    conn.execute(
+        "DELETE FROM peers WHERE peer_id = ?1",
+        params![peer_id.to_string()],
+    )
 }

@@ -203,7 +203,7 @@ pub async fn doctor(config: &Config) -> CliResult<()> {
         checks_passed += 1;
     } else {
         output::warning("Configuration file not found");
-        issues.push("Run 'nexus-cli init' to create configuration");
+        issues.push("Run 'ahenk-cli init' to create configuration");
     }
 
     // Check 2: Database
@@ -226,7 +226,7 @@ pub async fn doctor(config: &Config) -> CliResult<()> {
         }
     } else {
         output::warning("Database not found");
-        issues.push("Run 'nexus-cli init' to create database");
+        issues.push("Run 'ahenk-cli init' to create database");
     }
 
     // Check 3: User configured
@@ -236,7 +236,7 @@ pub async fn doctor(config: &Config) -> CliResult<()> {
         checks_passed += 1;
     } else {
         output::warning("User not configured");
-        issues.push("Run 'nexus-cli init --user <NAME> --email <EMAIL>' to configure user");
+        issues.push("Run 'ahenk-cli init --user <NAME> --email <EMAIL>' to configure user");
     }
 
     // Check 4: Device configured

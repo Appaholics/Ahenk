@@ -1,17 +1,17 @@
-# CFOST
+# Ahenk
 
-**Conflict-Free Offline Synchronization Tool**
+**Cross-platform database synchronization infrastructure**
 
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](tests/)
 [![Rust](https://img.shields.io/badge/rust-nightly%202024-orange)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](#license)
-[![crates.io](https://img.shields.io/crates/v/cfost)](https://crates.io/crates/cfost)
+[![crates.io](https://img.shields.io/crates/v/ahenk)](https://crates.io/crates/ahenk)
 
 > Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture.
 
 ## Overview
 
-**CFOST** (Conflict-Free Offline Synchronization Tool) is a batteries-included Rust library that provides everything you need to synchronize databases across devices in your application ecosystem. It handles the complex distributed systems challenges so you can focus on building your app.
+**Ahenk** is a batteries-included Rust library that provides everything you need to synchronize databases across devices in your application ecosystem. It handles the complex distributed systems challenges so you can focus on building your app.
 
 ### Key Features
 
@@ -42,15 +42,15 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-cfost = { git = "https://github.com/kodfikirsanat/cfost" }
+ahenk = { git = "https://github.com/kodfikirsanat/ahenk" }
 # Or from crates.io (when published):
-# cfost = "0.1"
+# ahenk = "0.1"
 ```
 
 ### Basic Usage
 
 ```rust
-use cfost::{initialize_database, register_user, add_device_to_user};
+use ahenk::{initialize_database, register_user, add_device_to_user};
 
 // Initialize database (auto-migrates schema)
 let conn = initialize_database("app.db")?;
@@ -86,7 +86,7 @@ println!("User {} registered on device {}", user.user_name, device.device_id);
                          │
                          ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                     nexus-core API                           │
+│                        Ahenk API                             │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌────────────┐  ┌─────────────┐  ┌───────────────────┐    │
 │  │   Users    │  │   Devices   │  │  Operation Log    │    │
@@ -124,7 +124,7 @@ println!("User {} registered on device {}", user.user_name, device.device_id);
 ### 1. Initialize Database
 
 ```rust
-use cfost::initialize_database;
+use ahenk::initialize_database;
 
 let conn = initialize_database("app.db")?;
 // Creates users, devices, oplog, and peers tables automatically
@@ -133,7 +133,7 @@ let conn = initialize_database("app.db")?;
 ### 2. User & Device Management
 
 ```rust
-use cfost::{register_user, add_device_to_user, login_user};
+use ahenk::{register_user, add_device_to_user, login_user};
 
 // Register user
 let user = register_user(&conn, username, email, password)?;
@@ -148,7 +148,7 @@ let device = add_device_to_user(&conn, user.user_id, "android", None)?;
 ### 3. Track Operations in Your App
 
 ```rust
-use cfost::{build_oplog_entry, local_apply};
+use ahenk::{build_oplog_entry, local_apply};
 
 // Your app creates a record
 conn.execute(
@@ -169,7 +169,7 @@ local_apply(&mut conn, &entry)?;
 ### 4. Set Up P2P Sync
 
 ```rust
-use cfost::{create_swarm, P2PConfig, SyncMessage};
+use ahenk::{create_swarm, P2PConfig, SyncMessage};
 
 // Create P2P swarm with auto-discovery
 let mut swarm = create_swarm().await?;
@@ -197,7 +197,7 @@ while let Some(event) = swarm.select_next_some().await {
 ### 5. Implement Conflict Resolution
 
 ```rust
-use cfost::{merge, OplogEntry, HybridLogicalClock};
+use ahenk::{merge, OplogEntry, HybridLogicalClock};
 
 // Receive operations from peer
 let remote_ops: Vec<OplogEntry> = get_from_peer();
@@ -220,31 +220,31 @@ for op in remote_ops {
 
 ## CLI Tool
 
-Nexus-core includes a CLI for managing the sync daemon:
+Ahenk includes a CLI for managing the sync daemon:
 
 ```bash
 # Install CLI
 cargo install --path . --features cli
 
 # Initialize with user
-nexus-cli init --user alice --email alice@example.com
+ahenk-cli init --user alice --email alice@example.com
 
 # Start sync daemon
-nexus-cli start --daemon
+ahenk-cli start --daemon
 
 # Check status
-nexus-cli status
+ahenk-cli status
 
 # Manage devices
-nexus-cli device list
-nexus-cli device add --type ios
+ahenk-cli device list
+ahenk-cli device add --type ios
 
 # Manage peers
-nexus-cli peer list
-nexus-cli peer add /ip4/192.168.1.100/tcp/4001/p2p/12D3...
+ahenk-cli peer list
+ahenk-cli peer add /ip4/192.168.1.100/tcp/4001/p2p/12D3...
 
 # View logs
-nexus-cli logs --follow
+ahenk-cli logs --follow
 ```
 
 See [docs/CLI_USAGE.md](docs/CLI_USAGE.md) for complete CLI documentation.
@@ -254,7 +254,7 @@ See [docs/CLI_USAGE.md](docs/CLI_USAGE.md) for complete CLI documentation.
 ### Custom CRDT Implementation
 
 ```rust
-use cfost::{HybridLogicalClock, OplogEntry};
+use ahenk::{HybridLogicalClock, OplogEntry};
 
 // Use HLC for causal ordering
 let hlc = HybridLogicalClock::now();
@@ -273,7 +273,7 @@ let entry = OplogEntry {
 ### Device Authorization Workflow
 
 ```rust
-use cfost::{DeviceAuthManager, AuthorizerWorkflow, NewDeviceWorkflow};
+use ahenk::{DeviceAuthManager, AuthorizerWorkflow, NewDeviceWorkflow};
 
 // On device with account (authorizer)
 let manager = DeviceAuthManager::new(&conn, user_id, device_id);
@@ -340,7 +340,7 @@ cargo test --lib --test integration_test
 |----------|-------------|
 | [CLI_USAGE.md](docs/CLI_USAGE.md) | Complete CLI tool guide |
 | [DATABASE_MIGRATIONS.md](docs/DATABASE_MIGRATIONS.md) | Migration system guide |
-| [API Documentation](https://docs.rs/nexus-core) | Complete API reference |
+| [API Documentation](https://docs.rs/ahenk) | Complete API reference |
 
 ### Generate Local Docs
 

@@ -1,7 +1,7 @@
 use crate::cli::config::Config;
 use crate::cli::errors::{CliError, CliResult};
 use crate::cli::output;
-use crate::db::operations::{get_all_peers, initialize_database};
+use crate::db::operations::{delete_peer, get_all_peers, initialize_database};
 
 pub async fn list(json: bool, config: &Config) -> CliResult<()> {
     let db_path = config.db_path();
@@ -54,9 +54,20 @@ pub async fn list(json: bool, config: &Config) -> CliResult<()> {
 pub async fn add(multiaddr: &str, config: &Config) -> CliResult<()> {
     output::step(&format!("Adding peer: {}", multiaddr));
 
-    // TODO: Implement peer addition via IPC to daemon
-    output::warning("Peer addition not yet implemented");
-    output::info("Add bootstrap nodes to config: nexus-cli config set network.bootstrap_nodes");
+    output::warning("Direct peer addition requires IPC communication with the running daemon");
+    output::info("Alternative approaches:");
+    output::info("  1. Add bootstrap nodes to config file");
+    output::info("  2. Use mDNS for automatic local peer discovery");
+    output::info("  3. Configure relay servers in network settings");
+    output::info("");
+    output::info(&format!("To add bootstrap peer: {}", multiaddr));
+    output::info("  Edit config file: ~/.ahenk/config.toml");
+    output::info("  Add under [network.bootstrap_nodes]");
+
+    // Future implementation will use IPC to communicate with daemon:
+    // - Send ADD_PEER message to daemon via Unix socket/Named pipe
+    // - Daemon will connect to peer and add to peer table
+    // - Return success/failure status
 
     Ok(())
 }
@@ -64,8 +75,22 @@ pub async fn add(multiaddr: &str, config: &Config) -> CliResult<()> {
 pub async fn remove(peer_id: &str, config: &Config) -> CliResult<()> {
     output::step(&format!("Removing peer: {}", peer_id));
 
-    // TODO: Implement peer removal
-    output::warning("Peer removal not yet implemented");
+    let peer_uuid = uuid::Uuid::parse_str(peer_id)
+        .map_err(|_| CliError::ValidationError("Invalid peer ID format".to_string()))?;
+
+    let db_path = config.db_path();
+    let conn = initialize_database(&db_path).map_err(|e| CliError::DatabaseError(e.to_string()))?;
+
+    // Remove the peer from database
+    let rows_affected =
+        delete_peer(&conn, peer_uuid).map_err(|e| CliError::DatabaseError(e.to_string()))?;
+
+    if rows_affected > 0 {
+        output::success(&format!("Peer {} removed from database", peer_id));
+        output::warning("Note: Daemon restart may be required for changes to take effect");
+    } else {
+        output::warning(&format!("Peer {} not found", peer_id));
+    }
 
     Ok(())
 }

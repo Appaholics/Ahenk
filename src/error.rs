@@ -1,6 +1,6 @@
 use std::fmt;
 
-/// Main error type for the nexus-core library
+/// Main error type for the ahenk library
 #[derive(Debug)]
 pub enum NexusError {
     /// Database-related errors
@@ -70,5 +70,5 @@ impl From<&str> for NexusError {
     }
 }
 
-/// Result type alias for nexus-core operations
+/// Result type alias for ahenk operations
 pub type Result<T> = std::result::Result<T, NexusError>;

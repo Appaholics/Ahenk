@@ -1,13 +1,13 @@
 [package]
-name = "cfost"
+name = "ahenk"
 version = "0.1.0"
-edition = "2021"
-authors = ["CFOST Contributors"]
+edition = "2024"
+authors = ["Ahenk Contributors"]
 license = "MIT OR Apache-2.0"
-description = "CFOST (Conflict-Free Offline Synchronization Tool) - Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture"
-repository = "https://github.com/kodfikirsanat/cfost"
-homepage = "https://github.com/kodfikirsanat/cfost"
-documentation = "https://docs.rs/cfost"
+description = "Ahenk - Cross-platform database synchronization infrastructure with P2P networking, CRDT conflict resolution, and offline-first architecture"
+repository = "https://github.com/kodfikirsanat/ahenk"
+homepage = "https://github.com/kodfikirsanat/ahenk"
+documentation = "https://docs.rs/ahenk"
 readme = "README.md"
 keywords = ["database", "sync", "p2p", "crdt", "offline-first"]
 categories = ["database", "network-programming", "authentication", "data-structures"]
@@ -24,7 +24,7 @@ exclude = [
 ]
 
 [lib]
-name = "cfost"
+name = "ahenk"
 # Support both static and dynamic linking
 crate-type = ["staticlib", "cdylib", "rlib"]
 
@@ -92,8 +92,8 @@ cli = [
 tauri-api = ["tauri"]
 
 [[bin]]
-name = "cfost-cli"
-path = "src/bin/cfost-cli.rs"
+name = "ahenk-cli"
+path = "src/bin/ahenk-cli.rs"
 required-features = ["cli"]
 
 [profile.release]

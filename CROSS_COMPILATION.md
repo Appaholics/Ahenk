@@ -3,7 +3,7 @@
 ## Quick Start
 
 ```bash
-cd nexus-core
+cd ahenk
 
 # First time setup
 make setup-targets
@@ -35,7 +35,7 @@ make build-all
 ## Output Directories
 
 ```
-nexus-core/target/
+ahenk/target/
 ├── ios/
 │   ├── libnexus_core_device.a
 │   └── libnexus_core_sim.a

@@ -1,7 +1,7 @@
 # Nexus-Core Implementation Summary
 
 ## Task Completed
-All missing CRUD operations for the Rust sync tool (nexus-core) have been implemented following the existing code style and patterns.
+All missing CRUD operations for the Rust sync tool (ahenk) have been implemented following the existing code style and patterns.
 
 ## What Was Missing
 The project had incomplete database operations for 3 out of 12 tables:
